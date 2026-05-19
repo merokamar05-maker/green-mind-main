@@ -1,13 +1,13 @@
-
-
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { IoArrowBackOutline } from "react-icons/io5";
 
-export default function LessonPage() {
+/* ---- Inner component that uses useSearchParams ---- */
+function LessonContent() {
   const searchParams = useSearchParams();
   const videoFromUrl = searchParams.get("video");
 
@@ -15,7 +15,6 @@ export default function LessonPage() {
     { id: 1, questions: 5 },
     { id: 2, questions: 5 },
     { id: 3, questions: 5 },
-
   ];
 
   const relatedLessons = [
@@ -67,7 +66,6 @@ export default function LessonPage() {
     }
   }, [videoFromUrl]);
 
-
   const currentVideoId = currentVideo.split("/").pop();
 
   const videoEntry = Object.entries({
@@ -84,13 +82,21 @@ export default function LessonPage() {
   }).find(([key, id]) => id === currentVideoId);
 
   const currentVideoKey = videoEntry ? videoEntry[0] : "video1";
-
   const hideQuizVideos = ["video7", "video8", "video9", "video10"];
-
   const showQuiz = !hideQuizVideos.includes(currentVideoKey);
-  return (
 
+  return (
     <div className="max-w-6xl mx-auto p-6 md:p-10 relative z-10">
+      {/* Back Button */}
+      <div className="mb-6">
+        <Link
+          href="/lessons"
+          className="inline-flex items-center gap-2 text-green-700 hover:text-green-900 transition-colors font-medium text-lg"
+        >
+          <IoArrowBackOutline size={22} />
+          Back to Lessons
+        </Link>
+      </div>
 
       {/* Video Section */}
       <div className="rounded-xl overflow-hidden shadow-lg">
@@ -109,7 +115,6 @@ export default function LessonPage() {
 
       {/* Main Content */}
       <div className="mt-6 flex flex-col md:flex-row gap-6">
-
         {/* Left */}
         <div className="flex flex-col gap-6 md:w-[47%]">
           <div>
@@ -149,7 +154,6 @@ export default function LessonPage() {
         </div>
       </div>
 
-
       {/* Quiz */}
       {showQuiz && (
         <div className="mt-6">
@@ -157,11 +161,9 @@ export default function LessonPage() {
             <h3 className="font-poppins font-semibold text-2xl">
               Lesson Quiz
             </h3>
-
             <p className="text-[#333333] mt-2 mb-5">
               5 Questions
             </p>
-
             <Link
               href={`/quiz/${currentVideoKey}`}
               className="inline-block px-8 py-3 bg-[#3EF772] text-white rounded-xl font-bold hover:bg-green-600 transition"
@@ -171,10 +173,10 @@ export default function LessonPage() {
           </div>
         </div>
       )}
+
       {/* Related Lessons */}
       <div className="mt-10">
         <h2 className="font-semibold mb-4 text-xl">Related Lessons</h2>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
           {relatedLessons.map((lesson) => (
             <div
@@ -188,14 +190,11 @@ export default function LessonPage() {
                 alt={lesson.title}
                 className="rounded-xl"
               />
-
               <div className="text-center ml-10">
                 <h3 className="font-semibold">{lesson.title}</h3>
                 <p className="text-gray-600 text-sm mt-5">
                   Level {lesson.level} • {lesson.duration}
                 </p>
-
-
                 <Link
                   href={`/lesson-page?video=${encodeURIComponent(lesson.video)}`}
                   className="mt-2 inline-block text-[#3EF772] px-4 py-1 rounded-full hover:scale-105 transition"
@@ -229,23 +228,19 @@ export default function LessonPage() {
           </div>
 
           <div className="flex gap-16 text-white">
-
             <div>
               <h3 className="font-semibold mb-2">Explore</h3>
-
               <ul className="space-y-1 text-sm">
                 <li>
                   <Link href="/lessons" className="hover:text-green-600 transition">
                     Lessons
                   </Link>
                 </li>
-
                 <li>
                   <Link href="/games" className="hover:text-green-600 transition">
                     Games
                   </Link>
                 </li>
-
                 <li>
                   <Link href="/ai-scan" className="hover:text-green-600 transition">
                     AI Plant Scan
@@ -266,8 +261,6 @@ export default function LessonPage() {
                 <li><Link href="#">Privacy and Safety</Link></li>
               </ul>
             </div>
-
-
           </div>
         </div>
 
@@ -275,8 +268,19 @@ export default function LessonPage() {
           © 2025 Green Mind. All Rights Reserved.
         </p>
       </header>
-
     </div>
+  );
+}
 
+/* ---- Default export wrapped in Suspense (required by Next.js 16) ---- */
+export default function LessonPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <LessonContent />
+    </Suspense>
   );
 }
