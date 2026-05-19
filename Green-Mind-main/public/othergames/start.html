@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Memory Match</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap');
+
+  body {
+    margin: 0;
+    background: #a9c7e9;
+    background: url('background.jpg') no-repeat;
+    background-size: cover;
+    font-family: 'Fredoka One', cursive, Arial, sans-serif;
+    overflow: hidden;
+    direction: rtl;
+    user-select: none;
+    position: relative;
+  }
+
+ 
+  .title {
+    text-align: center;
+    margin-top: 70px;
+    
+    animation: floatTitle 2s ease-in-out infinite;
+  }
+
+  .title .memory {
+    font-family: 'Baloo 2', cursive;
+    font-size: 100px;
+    font-weight: 900;
+    background: linear-gradient(to bottom, #ffffff, #ffffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 0 #4bc430, 0 12px 1px rgba(0,0,0,0.25);
+    letter-spacing: 9px;
+  }
+
+  .title .match {
+    font-family: 'Baloo 2', cursive;
+    font-size: 75px;
+    font-weight: 900;
+    color: #e53935;
+    text-shadow: 0 3px 0 #e31b1b, 0 12px 1px rgba(0,0,0,0.25);
+    margin-top: -20px;
+    
+    letter-spacing: 9px;
+    background: linear-gradient(to bottom, #ffffff, #ffffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  @keyframes floatTitle {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+.title {
+  text-align: center;
+  margin-top: 70px;
+  animation: floatTitle 2s ease-in-out infinite;
+  position: relative; 
+}
+
+
+@keyframes sparkleUp {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-40px) scale(1);
+  }
+}
+  #sound-toggle {
+    position: fixed;
+    top: 25px;
+    left: 25px;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+  }
+
+  #sound-toggle img {
+    width: 100%;
+    height: 100%;
+  }
+
+  #sound-toggle.muted img {
+    opacity: 0.6;
+  }
+
+.home-btn {
+    position: fixed;
+    top: 25px;
+    right: 25px; 
+    font-size: 35px; 
+    color: white; 
+    text-decoration: none;
+    background: #3a7be7; 
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    z-index: 100;
+    box-shadow:
+      inset 0 8px 10px rgba(255,255,255,0.5),
+      0 7px 15px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease;
+}
+
+.home-btn:hover {
+    transform: scale(1.1);
+    background: #e53935; 
+}
+  .cards-preview {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    margin: 5px auto 60px;
+  }
+
+  .card-back,
+  .card-cat,
+  .card-bird {
+    width: 155px;
+    height: 105px;
+    border-radius: 15px;
+    position: absolute;
+    margin-top: 21px;
+    box-shadow: inset 0 0 14px #000000;
+  }
+
+  .card-back {
+    top: 0; 
+    left: 110px;
+    background: #a0c1f2 url('cat1.jpg') center/cover no-repeat;
+    z-index: 2;
+  }
+
+  .card-cat {
+    top: 25px; right: 3px;
+    background: white url('monkey.jpg') center/contain no-repeat;
+    z-index: 3;
+  }
+
+  .card-bird {
+    top: 50px; right: 140px;
+    background: white url('pownin1.jpg') center/contain no-repeat;
+    z-index: 1;
+  }
+
+ 
+  #play-button {
+    margin: 20px auto;
+    background: #3a7be7;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    box-shadow:
+      inset 0 8px 10px rgba(255,255,255,0.5),
+      0 7px 15px rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+   
+    transition: transform 0.2s ease;
+    z-index: 5;
+  }
+
+  #play-button:hover {
+   
+    
+    transform: scale(1.1);
+    background: #e53935; 
+}
+ .character {
+  position: absolute;
+  bottom: 420px;       
+  right: 420px;         
+  width: 100px;
+  height: auto;
+
+
+  animation: floatTitle 2s infinite ease-in-out;
+  z-index: 6;
+  pointer-events: none; 
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+} 
+
+  @keyframes floatButton {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  #play-button svg {
+    width: 60px;
+    height: 60px;
+    fill: white;
+  }
+
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    animation: rise linear infinite;
+    z-index: 0;
+  }
+
+  .bubble.red { background: rgba(255,0,0,0.9); }
+  .bubble.green { background: rgba(0,255,0,0.8); }
+
+  @keyframes rise {
+    0% { transform: translateY(0) scale(1); opacity: 0.5; }
+    50% { transform: translateY(-250px) scale(1.2); opacity: 0.7; }
+    100% { transform: translateY(-500px) scale(1); opacity: 0; }
+  }
+  /* فقاعة الكلام */
+.speech {
+  position: absolute;
+  top: -55px;
+  right: 50%;
+  transform: translateX(50%);
+  background: white;
+  color: #3a7be7;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 16px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  white-space: nowrap;
+
+  animation: speechPop 4s infinite;
+}
+
+/* ديل الفقاعة */
+.speech::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  right: 20px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid white;
+}
+
+
+@keyframes runAcross {
+  0%   { left: -100px; }
+  100% { left: 100%; } 
+}
+
+@keyframes speechPop {
+  0% {
+    opacity: 0;
+    transform: translateX(50%) scale(0.8);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translateX(50%) scale(1.05) rotate(2deg);
+  }
+
+  30% {
+    transform: translateX(50%) rotate(-2deg);
+  }
+
+  40% {
+    transform: translateX(50%) rotate(2deg);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateX(50%) scale(1);
+  }
+
+  70% {
+    opacity: 0;
+    transform: translateX(50%) scale(0.8);
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<a href="#" class="home-btn" id="home-link" onclick="window.parent.postMessage('closeGame', '*'); return false;">
+    <i class="fas fa-home"></i>
+</a>
+
+<div class="bubble green" style="left:2%; width:50px; height:50px; bottom:0px; animation-duration:6s;"></div>
+<div class="bubble red" style="left:12%; width:25px; height:25px; bottom:0px; animation-duration:5s;"></div>
+<div class="bubble green" style="left:22%; width:45px; height:45px; bottom:0px; animation-duration:7s;"></div>
+<div class="bubble red" style="left:32%; width:22px; height:22px; bottom:0px; animation-duration:6.5s;"></div>
+<div class="bubble green" style="left:42%; width:50px; height:50px; bottom:0px; animation-duration:6.2s;"></div>
+<div class="bubble red" style="left:52%; width:22px; height:22px; bottom:0px; animation-duration:6.8s;"></div>
+<div class="bubble green" style="left:62%; width:48px; height:48px; bottom:0px; animation-duration:7s;"></div>
+<div class="bubble red" style="left:72%; width:22px; height:22px; bottom:0px; animation-duration:6.6s;"></div>
+<div class="bubble green" style="left:82%; width:50px; height:50px; bottom:0px; animation-duration:6.3s;"></div>
+<div class="bubble red" style="left:92%; width:22px; height:22px; bottom:0px; animation-duration:7s;"></div>
+
+
+<div class="bubble green" style="left:5%; width:50px; height:50px; bottom:50px; animation-duration:6.3s;"></div>
+<div class="bubble red" style="left:15%; width:23px; height:23px; bottom:50px; animation-duration:5.2s;"></div>
+<div class="bubble green" style="left:25%; width:48px; height:48px; bottom:50px; animation-duration:6.8s;"></div>
+<div class="bubble red" style="left:35%; width:22px; height:22px; bottom:50px; animation-duration:6s;"></div>
+<div class="bubble green" style="left:45%; width:50px; height:50px; bottom:50px; animation-duration:7s;"></div>
+<div class="bubble red" style="left:55%; width:22px; height:22px; bottom:50px; animation-duration:6.5s;"></div>
+<div class="bubble green" style="left:65%; width:48px; height:48px; bottom:50px; animation-duration:6.9s;"></div>
+<div class="bubble red" style="left:75%; width:22px; height:22px; bottom:50px; animation-duration:6.4s;"></div>
+<div class="bubble green" style="left:85%; width:50px; height:50px; bottom:50px; animation-duration:7.2s;"></div>
+<div class="bubble red" style="left:95%; width:22px; height:22px; bottom:50px; animation-duration:6.7s;"></div>
+
+
+<div class="bubble green" style="left:3%; width:50px; height:50px; bottom:100px; animation-duration:6.1s;"></div>
+<div class="bubble red" style="left:13%; width:22px; height:22px; bottom:100px; animation-duration:5.5s;"></div>
+<div class="bubble green" style="left:23%; width:48px; height:48px; bottom:100px; animation-duration:6.6s;"></div>
+<div class="bubble red" style="left:33%; width:22px; height:22px; bottom:100px; animation-duration:6.2s;"></div>
+<div class="bubble green" style="left:43%; width:50px; height:50px; bottom:100px; animation-duration:7.1s;"></div>
+<div class="bubble red" style="left:53%; width:22px; height:22px; bottom:100px; animation-duration:6.4s;"></div>
+<div class="bubble green" style="left:63%; width:48px; height:48px; bottom:100px; animation-duration:6.9s;"></div>
+<div class="bubble red" style="left:73%; width:22px; height:22px; bottom:100px; animation-duration:6.6s;"></div>
+<div class="bubble green" style="left:83%; width:50px; height:50px; bottom:100px; animation-duration:7.2s;"></div>
+<div class="bubble red" style="left:93%; width:22px; height:22px; bottom:100px; animation-duration:6.8s;"></div>
+
+<div id="sound-toggle">
+  <img id="sound-icon" src="on.png" alt="Sound On" />
+</div>
+
+<div class="title">
+  <div class="memory">Memory</div>
+  <div class="match">Match</div>
+</div>
+
+<div class="cards-preview">
+  <div class="card-back"></div>
+  <div class="card-cat"></div>
+  <div class="card-bird"></div>
+</div>
+
+
+<div id="play-button">
+  <svg viewBox="0 0 64 64">
+    <polygon points="16,12 52,32 16,52" />
+  </svg>
+</div>
+<div class="character">
+  <img src="greenmind.png" style="width: 100%; display:block">
+  <div class="speech">!Let’s Play</div>
+</div>
+
+<audio id="bg-music" loop src="music.mp3"></audio>
+<audio id="button-sound" src="button.mp3"></audio>
+
+<script>
+  const bgMusic = document.getElementById('bg-music');
+  const buttonSound = document.getElementById('button-sound');
+  const homeSound = document.getElementById('home-sound'); 
+  const soundToggle = document.getElementById('sound-toggle');
+  const soundIcon = document.getElementById('sound-icon');
+  const playButton = document.getElementById('play-button');
+  const homeButton = document.getElementById('home-link'); 
+
+  let isMuted = false;
+
+
+  window.addEventListener('load', () => {
+    if (!isMuted) {
+      bgMusic.volume = 0.5;
+      bgMusic.play().catch(() => {
+        console.log("Autoplay blocked");
+      });
+    }
+  });
+
+  soundToggle.addEventListener('click', () => {
+    isMuted = !isMuted;
+
+    if (isMuted) {
+      bgMusic.pause(); 
+      soundIcon.src = 'off.png';
+      soundToggle.classList.add('muted');
+    } else {
+      bgMusic.volume = 0.5;
+      bgMusic.play();
+      soundIcon.src = 'on.png';
+      soundToggle.classList.remove('muted');
+    }
+  });
+
+  playButton.addEventListener('click', () => {
+    if (!isMuted) {
+      buttonSound.currentTime = 0;
+      buttonSound.play();
+    }
+    window.location.href = "map.html"; 
+  });
+
+  
+  homeButton.addEventListener('click', (e) => {
+    if (!isMuted) {
+      homeSound.currentTime = 0;
+      homeSound.play();
+    }
+   
+  });
+</script>
+  
+
+</body>
+</html>

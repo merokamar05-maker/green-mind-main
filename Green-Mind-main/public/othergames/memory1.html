@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Memory Match</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Comic Sans MS', Arial, sans-serif;
+}
+
+body{
+  min-height:100vh;
+  background: url("back4.jpg") no-repeat center center fixed;
+  background-size: cover;
+ 
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.wrapper{
+  width:100%;
+  max-width:1100px;
+  height:90vh;
+  background:linear-gradient(rgba(255, 255, 255, 0.4),rgba(255, 255, 255, 0.2));
+ 
+  border-radius:30px;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 15px 30px rgba(0,0,0,.2);
+  backdrop-filter: blur(5px);
+}
+
+.header{
+  text-align:center;
+}
+.header h1{
+  font-size:55px;
+  color:#4CAF50;
+  text-shadow:3px 3px 0 #fff;
+  animation: jelly 2.5s infinite;
+}
+
+@keyframes jelly{
+  0%{ transform: scale(1,1); }
+  30%{ transform: scale(1.15,0.85); }
+  40%{ transform: scale(0.9,1.1); }
+  50%{ transform: scale(1.05,0.95); }
+  65%{ transform: scale(0.98,1.02); }
+  100%{ transform: scale(1,1); }
+}
+
+
+
+
+
+.stats{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin:10px 0 15px;
+}
+
+
+.stat{
+  background:#fff;
+  padding:8px 16px;
+  border-radius:15px;
+  font-size:17px;
+  box-shadow:0 5px 0 #ccc;
+  min-width:110px;
+  text-align:center;
+}
+
+.board{
+  flex:1;
+  max-width:250px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  justify-content: center;
+}
+
+
+.card{
+  position:relative;
+  width:90%;
+  aspect-ratio:1/1;
+  perspective:1000px;
+  cursor:pointer;
+}
+
+.card-inner{
+  position:relative;
+  width:100%;
+  height:100%;
+  transition:transform .5s;
+  transform-style:preserve-3d;
+}
+
+.card.flip .card-inner{
+  transform:rotateY(180deg);
+}
+
+.card.matched{
+  pointer-events:none;
+}
+
+.face{
+  position:absolute;
+  inset:0;
+  border-radius:18px;
+  backface-visibility:hidden;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.front{
+  background:#fff;
+  font-size:38px;
+  box-shadow:0 6px 0 #bbb;
+}
+
+.back{
+  background:#fff;
+  transform:rotateY(180deg);
+  box-shadow:0 6px 0 #bbb;
+}
+
+.back img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.controls{
+  text-align:center;
+  margin-top:10px;
+}
+
+button{
+  padding:10px 30px;
+  font-size:18px;
+  border:none;
+  border-radius:20px;
+  background:#4CAF50;
+  color:#fff;
+  cursor:pointer;
+  box-shadow:0 5px 0 #388e3c;
+}
+.controls button:hover{
+  background:#43a047;
+  transform: scale(1.1) translateY(-3px);
+  box-shadow:
+    0 10px 20px rgba(0,0,0,0.3),
+    inset 0 4px 6px rgba(255,255,255,0.4);
+}
+.controls button:active{
+  transform: scale(0.7);
+  box-shadow:0 2px 0 #3ca141;
+}
+
+button:active{
+  transform:translateY(3px);
+  box-shadow:0 2px 0 #388e3c;
+}
+
+@media(max-width:768px){
+  .board{grid-template-columns:repeat(3,1fr);}
+}
+@media(max-width:480px){
+  .board{grid-template-columns:repeat(2,1fr);}
+}
+.win-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.win-box {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 25px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  animation: pop 0.6s ease;
+}
+
+.win-box h2 {
+  color: #3a7be7;
+  margin-bottom: 10px;
+}
+
+.win-box button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+  padding: 10px 25px;
+  font-size: 18px;
+  border: none;
+  border-radius: 20px;
+  background: #e53935;
+  color: white;
+  cursor: pointer;
+}
+.win-box button:hover{
+  transform: scale(1.08);
+  background: #ff5252;
+}
+@keyframes pop {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.6;
+  bottom: 0;
+  animation-name: floatUp;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.bubble.green { background: rgba(0,255,0,0.4); }
+.bubble.red { background: rgba(255,0,0,0.4); }
+
+
+@keyframes floatUp {
+  0% { transform: translateY(0); opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { transform: translateY(-800px); opacity: 0; }
+}
+
+
+.win-box button:hover ~ .extra-balloons{
+  display:block;
+}
+.character {
+  position: absolute;
+  bottom: 250px;
+  left: 75%;
+  transform: translateX(-50px);
+  width: 155px;
+  height: auto;
+  animation: floatCharacter 2s infinite ease-in-out;
+  z-index: 6;
+  pointer-events: none;
+}
+@keyframes floatCharacter {
+  0%,100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-25px); }
+}
+
+.speech {
+  position: absolute;
+  top: -55px;
+  right: 50%;
+  transform: translateX(50%);
+  background: white;
+  color: #3a7be7;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 16px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  white-space: nowrap;
+  animation: speechPop 4s infinite;
+}
+.speech::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  right: 20px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid white;
+}
+@keyframes speechPop {
+  0% {
+    opacity: 0;
+    transform: translateX(50%) scale(0.8);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(50%) scale(1.05) rotate(2deg);
+  }
+  30% { transform: translateX(50%) rotate(-2deg); }
+  40% { transform: translateX(50%) rotate(2deg); }
+  50% {
+    opacity: 1;
+    transform: translateX(50%) scale(1);
+  }
+  70% {
+    opacity: 0;
+    transform: translateX(50%) scale(0.8);
+  }
+  100% { opacity: 0; }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+  <div class="header">
+    <h1>Memory Match</h1>
+  </div>
+
+  <div class="stats">
+    <div class="stat">Moves<br><b id="moves">0</b></div>
+    <div class="stat">Matches<br><b id="matches">0/2</b></div>
+    <div class="stat">Time<br><b id="time">0</b>s</div>
+    <div class="stat">Level<br><b id="level">1</b></div>
+  </div>
+
+  <div class="board" id="board"></div>
+
+  <div class="controls">
+    <button onclick="newGame()">New Game</button>
+  </div>
+
+</div>
+
+<audio id="flipSound" src="flip.mp3"></audio>
+<audio id="matchSound" src="kids.mp3"></audio>
+
+<script>
+
+const images = [
+  
+  "fish1.jpg",
+  "fish2.jpg"
+  
+  
+];
+
+const board = document.getElementById("board");
+const flipSound = document.getElementById("flipSound");
+const matchSound = document.getElementById("matchSound");
+
+let firstCard = null;
+let secondCard = null;
+let lock = false;
+let moves = 0;
+let matches = 0;
+
+
+let time = 0;
+let timerInterval = null;
+const level = 1;
+
+
+document.body.addEventListener("click", () => {
+  flipSound.play().then(() => {
+    flipSound.pause();
+    flipSound.currentTime = 0;
+  }).catch(()=>{});
+}, { once: true });
+
+function startGame(){
+  board.innerHTML = "";
+  moves = 0;
+  matches = 0;
+  time = 0;
+
+  document.getElementById("time").textContent = time;
+  document.getElementById("level").textContent = level;
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    time++;
+    document.getElementById("time").textContent = time;
+  }, 1000);
+
+  updateStats();
+
+  const cards = [...images, ...images].sort(() => Math.random() - 0.5);
+
+  cards.forEach(img => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.dataset.img = img;
+
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="face front"><i class="fas fa-leaf"></i></div>
+        <div class="face back"><img src="${img}"></div>
+      </div>
+    `;
+
+    card.onclick = () => flipCard(card);
+    board.appendChild(card);
+  });
+}
+
+function flipCard(card){
+  if(lock || card === firstCard || card.classList.contains("matched")) return;
+
+  flipSound.currentTime = 0;
+  flipSound.play();
+
+  card.classList.add("flip");
+
+  if(!firstCard){
+    firstCard = card;
+    return;
+  }
+
+  secondCard = card;
+  lock = true;
+  moves++;
+if(firstCard.dataset.img === secondCard.dataset.img){
+  matchSound.currentTime = 0;
+  matchSound.play();
+
+  firstCard.classList.add("matched");
+  secondCard.classList.add("matched");
+
+  matches++;
+
+  if(matches === images.length){
+    clearInterval(timerInterval);
+    gameFinished();
+  }
+
+  resetCards();
+}
+  else{
+    setTimeout(() => {
+      firstCard.classList.remove("flip");
+      secondCard.classList.remove("flip");
+      resetCards();
+    }, 700);
+  }
+
+  updateStats();
+}
+
+function resetCards(){
+  firstCard = null;
+  secondCard = null;
+  lock = false;
+}
+
+function updateStats(){
+  document.getElementById("moves").textContent = moves;
+  document.getElementById("matches").textContent = matches + "/2";
+}
+
+
+function newGame(){
+  startGame();
+}
+
+startGame();
+let startTime = Date.now();
+
+function gameFinished() {
+  localStorage.setItem(`level${level}Completed`, "true");
+let stars = 3;
+
+if(moves > 20) stars = 2;
+if(moves > 30) stars = 1;
+
+localStorage.setItem(`level${level}Score`, stars);
+ 
+  clearInterval(timerInterval);
+
+
+  flipSound.pause();
+  flipSound.currentTime = 0;
+  matchSound.pause();
+  matchSound.currentTime = 0;
+
+ 
+  const endTime = Date.now();
+  const seconds = Math.floor((endTime - startTime) / 1000);
+  document.getElementById("win-time").innerText =
+    `You finished in ${seconds} seconds ⏱️`;
+
+
+  document.getElementById("win-modal").style.display = "flex";
+
+  
+  const winSound = document.getElementById("win-sound");
+  winSound.currentTime = 0;
+  winSound.play().catch(() => {
+   
+  });
+}
+
+
+function goToNextLevel() {
+  window.location.href = "memory2.html";
+}
+function goToPrevPage() {
+  window.location.href = "map.html"; 
+}
+/*const levelNumber = parseInt(
+  window.location.pathname.match(/\d+/)[0]
+);*/
+
+</script>
+
+<div id="win-modal" class="win-modal">
+  <div class="win-box">
+    <h2>🎉 Winner! 🎉</h2>
+    <p id="win-time">You finished in 0s</p>
+    <button onclick="goToPrevPage()">← Back</button>
+    <button onclick="goToNextLevel()">Level 2 ➜</button>
+  </div>
+
+  
+  <div class="bubbles-container">
+ 
+    <div class="bubble green" style="left:2%; width:50px; height:50px; bottom:0px; animation-duration:6s;"></div>
+    <div class="bubble red" style="left:12%; width:25px; height:25px; bottom:0px; animation-duration:5s;"></div>
+    <div class="bubble green" style="left:22%; width:45px; height:45px; bottom:0px; animation-duration:7s;"></div>
+    <div class="bubble red" style="left:32%; width:22px; height:22px; bottom:0px; animation-duration:6.5s;"></div>
+    <div class="bubble green" style="left:42%; width:50px; height:50px; bottom:0px; animation-duration:6.2s;"></div>
+    <div class="bubble red" style="left:52%; width:22px; height:22px; bottom:0px; animation-duration:6.8s;"></div>
+    <div class="bubble green" style="left:62%; width:48px; height:48px; bottom:0px; animation-duration:7s;"></div>
+    <div class="bubble red" style="left:72%; width:22px; height:22px; bottom:0px; animation-duration:6.6s;"></div>
+    <div class="bubble green" style="left:82%; width:50px; height:50px; bottom:0px; animation-duration:6.3s;"></div>
+    <div class="bubble red" style="left:92%; width:22px; height:22px; bottom:0px; animation-duration:7s;"></div>
+
+  
+    <div class="bubble green" style="left:5%; width:50px; height:50px; bottom:50px; animation-duration:6.3s;"></div>
+    <div class="bubble red" style="left:15%; width:23px; height:23px; bottom:50px; animation-duration:5.2s;"></div>
+    <div class="bubble green" style="left:25%; width:48px; height:48px; bottom:50px; animation-duration:6.8s;"></div>
+    <div class="bubble red" style="left:35%; width:22px; height:22px; bottom:50px; animation-duration:6s;"></div>
+    <div class="bubble green" style="left:45%; width:50px; height:50px; bottom:50px; animation-duration:7s;"></div>
+    <div class="bubble red" style="left:55%; width:22px; height:22px; bottom:50px; animation-duration:6.5s;"></div>
+    <div class="bubble green" style="left:65%; width:48px; height:48px; bottom:50px; animation-duration:6.9s;"></div>
+    <div class="bubble red" style="left:75%; width:22px; height:22px; bottom:50px; animation-duration:6.4s;"></div>
+    <div class="bubble green" style="left:85%; width:50px; height:50px; bottom:50px; animation-duration:7.2s;"></div>
+    <div class="bubble red" style="left:95%; width:22px; height:22px; bottom:50px; animation-duration:6.7s;"></div>
+
+   
+    <div class="bubble green" style="left:3%; width:50px; height:50px; bottom:100px; animation-duration:6.1s;"></div>
+    <div class="bubble red" style="left:13%; width:22px; height:22px; bottom:100px; animation-duration:5.5s;"></div>
+    <div class="bubble green" style="left:23%; width:48px; height:48px; bottom:100px; animation-duration:6.6s;"></div>
+    <div class="bubble red" style="left:33%; width:22px; height:22px; bottom:100px; animation-duration:6.2s;"></div>
+    <div class="bubble green" style="left:43%; width:50px; height:50px; bottom:100px; animation-duration:7.1s;"></div>
+    <div class="bubble red" style="left:53%; width:22px; height:22px; bottom:100px; animation-duration:6.4s;"></div>
+    <div class="bubble green" style="left:63%; width:48px; height:48px; bottom:100px; animation-duration:6.9s;"></div>
+    <div class="bubble red" style="left:73%; width:22px; height:22px; bottom:100px; animation-duration:6.6s;"></div>
+    <div class="bubble green" style="left:83%; width:50px; height:50px; bottom:100px; animation-duration:7.2s;"></div>
+    <div class="bubble red" style="left:93%; width:22px; height:22px; bottom:100px; animation-duration:6.8s;"></div>
+  </div>
+</div>
+
+<div class="character">
+  <img src="greenmind.png" style="width: 100%; display:block">
+  <div class="speech">Nice Work</div>
+</div>
+
+<audio id="win-sound" src="winner.mp3"></audio>
+</body>
+</html>

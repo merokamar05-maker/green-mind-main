@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --green-btn: #82c91e;
+            --locked-color: #d1d5db;
+            --unlocked-bg: #ffffff;
+            --completed-bg: #e8f5e9;
+        }
+
+        body {
+            background-image: url('back4.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Arial Rounded MT Bold', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .game-container {
+            width: 85%;
+            max-width: 750px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            padding: 40px 20px;
+            border-radius: 50px;
+            position: relative;
+            text-align: center;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .character-box {
+            position: absolute;
+            top: -60px;
+            left: -30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .character {
+            width: 150px;
+            height: auto;
+            content: url('greenmind.png');
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .speech-bubble {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            color: #333;
+            border: 2px solid #82c91e;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            white-space: nowrap;
+            position: relative;
+            animation: blinkSpeech 4s infinite ease-in-out;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            left: -10px;        
+            top: 50%;           
+            transform: translateY(-50%);
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 10px solid white; 
+        }
+
+        @keyframes blinkSpeech {
+            0%, 20%, 80%, 100% {
+                opacity: 0;
+                transform: scale(0.8) translateY(10px);
+            }
+            30%, 70% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .magic-particle {
+            position: fixed;
+            bottom: 0; 
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, #fff, #ffeb3b);
+            border-radius: 50%;
+            pointer-events: none; 
+            z-index: 1;
+            box-shadow: 0 0 10px #ffeb3b, 0 0 20px #ff9800; 
+            animation: flyUp linear forwards;
+        }
+
+        @keyframes flyUp {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        .top-stats {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: #ff85a1;
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white;
+            border: 2px solid white;
+            font-weight: bold;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+            transition: transform 0.3s ease;
+        }
+
+        
+        .level-card {
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border-radius: 50%; 
+            aspect-ratio: 1/1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            transition: 0.3s ease, transform 0.3s ease;
+            font-weight: bold;
+            color: #333;
+            font-size: 1.5rem;
+            position: relative;
+            border: 2px solid #e0e0e0;
+        }
+
+        .level-card:hover:not(.locked) {
+            transform: scale(1.15) rotate(-2deg);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.3);
+            background: linear-gradient(145deg, #82c91e, #a6e22d);
+            color: white;
+        }
+
+        .level-card.completed {
+            background: linear-gradient(145deg, #e8f5e9, #c8e6c9);
+            box-shadow: 0 6px 15px #4caf50;
+            color: #2e7d32;
+        }
+
+        .level-card.locked {
+            background: #d1d5db;
+            box-shadow: 0 6px 15px #9ca3af;
+            cursor: not-allowed;
+            color: #777;
+        }
+
+        .arrow {
+            position: absolute;
+            top: 55%;
+            width: 45px;
+            height: 45px;
+            background: #f39c12;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #d35400;
+            z-index: 10;
+        }
+
+        
+       .play-btn {
+    background: var(--green-btn);
+    color: white;
+    border: none;
+    padding: 10px 60px;
+    font-size: 1.8rem;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #5b8c15;
+    font-weight: bold;
+    margin-top: 20px;
+    transition: 0.3s ease, transform 0.2s ease, background 0.3s ease;
+}
+.reset-btn{
+  margin-top:10px;
+  padding:8px 30px;
+  border:none;
+  border-radius:20px;
+  background:#ff6b6b;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:0 5px 0 #c0392b;
+  transition:0.3s;
+}
+
+.reset-btn:hover{
+  transform:scale(1.1);
+  background:#ff4d4d;
+}
+
+.reset-btn:active{
+  transform:translateY(3px);
+  box-shadow:0 2px 0 #c0392b;
+}
+
+.play-btn:hover {
+    transform: scale(1.1) rotate(-2deg); 
+    background: linear-gradient(45deg, #82c91e, #a6e22d); 
+    box-shadow: 0 10px 0 #5b8c15; 
+}
+
+        .play-btn:active { 
+            transform: translateY(3px); 
+            box-shadow: 0 3px 0 #5b8c15; 
+        }
+
+        .back-link {
+            position: absolute;
+            bottom: -25px;
+            left: 20px;
+            background: #ff85a1;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid white;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .jelly-text {
+            display: inline-block;
+            animation: jelly 2.5s infinite;
+        }
+
+        @keyframes jelly {
+            0% { transform: scale(1,1); }
+            30% { transform: scale(1.15,0.85); }
+            40% { transform: scale(0.9,1.1); }
+            50% { transform: scale(1.05,0.95); }
+            65% { transform: scale(0.98,1.02); }
+            100% { transform: scale(1,1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+
+        <div class="character-box">
+            <div class="character"></div>
+            <div class="speech-bubble">lets play</div>
+        </div>
+
+        <div class="top-stats">
+            <div class="stat-item">
+                <i class="fas fa-star" style="color: yellow;"></i> 
+                <span id="total-stars-display">0</span>
+            </div>
+        </div>
+
+        <h1 class="jelly-text" style="color:white; text-shadow: 2px 2px 5px rgba(0,0,0,0.3); margin:0;">LEVELS</h1>
+
+       
+        <div class="levels-grid" id="levelsGrid"></div>
+
+        <button class="play-btn" onclick="startCurrentLevel()">PLAY</button>
+
+
+<button class="reset-btn" onclick="resetGame()">Reset</button>
+        <a href="#" class="home-btn" onclick="window.parent.postMessage('closeGame', '*'); return false;">
+            <i class="fas fa-home"></i>
+        </a>
+        <a href="start.html" class="back-link">
+            <i class="fas fa-arrow-left fa-lg"></i>
+        </a>
+    </div>
+
+    <style>
+    .home-btn {
+        position: fixed;
+        top: 25px;
+        right: 25px; 
+        font-size: 25px; 
+        color: white; 
+        text-decoration: none;
+        background: #3a7be7; 
+        width: 50px;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        z-index: 1000;
+        transition: transform 0.2s ease;
+        border: 2px solid white;
+    }
+    .home-btn:hover {
+        transform: scale(1.1);
+        background: #e53935; 
+    }
+    </style>
+
+    <script>
+        const totalLevels = 10;
+
+        function initMap() {
+            const grid = document.getElementById('levelsGrid');
+            grid.innerHTML = '';
+
+            for (let i = 1; i <= totalLevels; i++) {
+                const card = document.createElement('div');
+                card.className = 'level-card';
+                card.id = `lvl${i}`;
+                
+                const isFirst = (i === 1);
+                const prevCompleted = localStorage.getItem(`level${i-1}Completed`) === 'true';
+                const isCompleted = localStorage.getItem(`level${i}Completed`) === 'true';
+
+                if (isFirst || prevCompleted || isCompleted) {
+                    if (isCompleted) {
+                        card.classList.add('completed');
+                        card.innerHTML = `<i class="fas fa-check" style="color:green"></i> ${i}`;
+                    } else {
+                        card.innerHTML = `${i}`;
+                        card.style.border = "3px solid var(--green-btn)";
+                    }
+                    card.onclick = () => window.location.href = `memory${i}.html`;
+                } else {
+                    card.classList.add('locked');
+                    card.innerHTML = `<i class="fas fa-lock"></i>`;
+                    card.onclick = () => alert("This level is locked. Complete previous levels to unlock it.");
+                }
+                
+                grid.appendChild(card);
+            }
+        }
+
+        function startCurrentLevel() {
+            for (let i = 1; i <= totalLevels; i++) {
+                if (localStorage.getItem(`level${i}Completed`) !== 'true') {
+                    window.location.href = `memory${i}.html`;
+                    return;
+                }
+            }
+            window.location.href = `memory1.html`;
+        }
+
+        function moveGrid(direction) {
+            const grid = document.getElementById('levelsGrid');
+            const moveVal = direction === 'right' ? -20 : 20;
+            grid.style.transform = `translateX(${moveVal}px)`;
+            setTimeout(() => grid.style.transform = "translateX(0)", 200);
+        }
+
+        function createMagicParticles() {
+            setInterval(() => {
+                const particle = document.createElement('div');
+                particle.className = 'magic-particle';
+                const randomX = Math.random() * window.innerWidth;
+                particle.style.left = randomX + 'px';
+                const size = Math.random() * 8 + 4 + 'px';
+                particle.style.width = size;
+                particle.style.height = size;
+                const duration = Math.random() * 4 + 3;
+                particle.style.animationDuration = duration + 's';
+                document.body.appendChild(particle);
+                setTimeout(() => { particle.remove(); }, duration * 1000);
+            }, 300);
+        }
+
+        window.addEventListener('load', () => {
+            createMagicParticles();
+        });
+
+        function updateTotalScore() {
+            let totalScore = 0;
+            for (let i = 1; i <= totalLevels; i++) {
+                const savedScore = localStorage.getItem(`level${i}Score`);
+                if (savedScore) {
+                    let scoreValue = parseFloat(savedScore);
+                    if (!isNaN(scoreValue)) {
+                        totalScore += scoreValue;
+                    }
+                }
+            }
+            const display = document.getElementById('total-stars-display');
+            if (display) {
+                display.innerText = totalScore;
+            }
+        }
+
+        window.onload = function() {
+            initMap();
+            updateTotalScore();
+            createMagicParticles();
+        };
+        function resetGame(){
+  localStorage.clear();
+  location.reload();
+}
+    </script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>start</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Comic Sans MS', cursive;
+}
+
+/* BODY */
+body{
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  background: url("assets/images/tree.jpg") center/cover no-repeat;
+  position:relative;
+}
+
+/* PUZZLE TITLE */
+.Puzzle-title{
+  position:absolute;
+  top:30px;
+  width:100%;
+  text-align:center;
+  font-size:60px;
+  color:#fff;
+  text-shadow:0 4px #6aa9ff;
+  z-index:5;
+}
+
+
+.home-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, #ff9a9e, #fad0c4);
+  border: 3px solid white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.2s, background 0.3s;
+  text-decoration: none; /* عشان لو استخدمنا <a> */
+}
+
+.home-btn i {
+  color: white;
+  font-size: 25px;
+}
+
+.home-btn:hover {
+  transform: scale(1.1) rotate(-10deg); /* حركة شقية لما الماوس ييجي عليه */
+  background: radial-gradient(circle, #fad0c4, #ff9a9e);
+}
+
+.home-btn:active {
+  transform: scale(0.9);
+}
+
+/* START BUTTON */
+.start-wrapper{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  z-index:5;
+}
+
+.start-btn{
+  width:260px;
+  height:260px;
+  border-radius:50%;
+  background:radial-gradient(circle,#7b5cff,#3be7ff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:60px;
+  color:white;
+  cursor:pointer;
+  box-shadow:0 0 30px gold;
+  animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+  0%{box-shadow:0 0 20px gold;}
+  50%{box-shadow:0 0 50px gold;}
+  100%{box-shadow:0 0 20px gold;}
+}
+
+/* FOX */
+.fox{
+  position:absolute;
+  bottom:20px;
+  left:40px;
+  width:200px;
+  animation: foxFloat 3s ease-in-out infinite;
+  z-index:4;
+}
+
+@keyframes foxFloat{
+  0%{transform:translateY(0);}
+  50%{transform:translateY(-15px);}
+  100%{transform:translateY(0);}
+}
+
+/* BALLOONS */
+.balloon{
+  position:absolute;
+  top:-150px;
+  width:80px;
+  animation: fallSide linear infinite;
+  z-index:2;
+}
+
+@keyframes fallSide{
+  0%{
+    transform: translate(0, 0);
+    opacity:0;
+  }
+  10%{
+    opacity:1;
+  }
+  25%{
+    transform: translate(25px, 30vh);
+  }
+  50%{
+    transform: translate(-25px, 60vh);
+  }
+  75%{
+    transform: translate(15px, 90vh);
+  }
+  100%{
+    transform: translate(0, 120vh);
+    opacity:0;
+  }
+}
+
+/* اختلاف سرعات وأماكن */
+.b1{ left:15%; animation-duration:9s; }
+.b2{ left:35%; animation-duration:11s; animation-delay:2s; }
+.b3{ left:55%; animation-duration:8s; animation-delay:1s; }
+.b4{ left:75%; animation-duration:10s; animation-delay:3s; }
+.b5{ left:90%; animation-duration:12s; animation-delay:4s; }
+
+</style>
+</head>
+
+<body>
+  
+<button onclick="window.parent.postMessage('closeGame', '*')" class="home-btn" style="border:none; cursor:pointer;">
+    <i class="fas fa-home"></i>
+</button>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="Puzzle-title">Piece One</div>
+
+<div class="start-wrapper">
+  <div class="start-btn" onclick="startGame()">START</div>
+</div>
+
+<img src="assets/images/green.png" class="fox">
+
+<!-- BALLOONS -->
+<img src="assets/images/flower1.png" class="balloon b1">
+<img src="assets/images/flower2.png" class="balloon b2">
+<img src="assets/images/flower3.png" class="balloon b3">
+<img src="assets/images/flower4.png" class="balloon b4">
+<img src="assets/images/flower5.png" class="balloon b5">
+
+
+<script>
+function startGame(){
+  window.location.href = "map1.html";
+}
+</script>
+
+</body>
+</html>

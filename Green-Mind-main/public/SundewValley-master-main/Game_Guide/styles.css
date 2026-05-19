@@ -1,0 +1,112 @@
+:root {
+    --primary: #4CAF50;
+    --primary-dark: #388E3C;
+    --background: #f4f9f4;
+    --card-bg: #ffffff;
+    --text-main: #333333;
+    --text-muted: #666666;
+}
+
+body {
+    background-color: var(--background);
+    background-image: radial-gradient(#e0f2e9 1px, transparent 1px);
+    background-size: 20px 20px;
+    margin: 0;
+    padding: 0;
+    font-family: 'Quicksand', sans-serif;
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 50px 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.header-icon {
+    font-size: 64px;
+    margin-bottom: 15px;
+}
+
+header h1 {
+    font-size: 46px;
+    color: var(--primary-dark);
+    margin: 0 0 15px 0;
+    font-weight: 700;
+}
+
+header p {
+    font-size: 18px;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+#tips {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.tip-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.tip-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(76, 175, 80, 0.15);
+    border-color: rgba(76, 175, 80, 0.3);
+}
+
+.tip-image-wrapper {
+    background: #e9f5ec;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+img.animated-gif {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    image-rendering: auto;
+}
+
+.tip-content {
+    padding: 25px;
+}
+
+.tip-content h3 {
+    margin: 0 0 12px 0;
+    font-size: 22px;
+    color: var(--primary-dark);
+    font-weight: 700;
+}
+
+.tip-content p {
+    margin: 0;
+    font-size: 15px;
+    color: var(--text-muted);
+}
+
+.tip-content strong {
+    color: var(--primary);
+    background: rgba(76, 175, 80, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}

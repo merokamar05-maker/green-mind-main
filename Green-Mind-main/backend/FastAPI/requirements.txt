@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+python-multipart
+tensorflow
+scikit-learn
+numpy
+matplotlib
+seaborn
+pandas
+streamlit
+librosa
+groq
+youtube-transcript-api
+yt-dlp
+ffmpeg-python

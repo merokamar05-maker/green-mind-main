@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level 6</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/puzzle1.css">
+</head>
+<body class="level-6">
+  
+  <a href="map1.html" class="back-to-map">
+    <i class="fas fa-map-marked-alt"></i> Back to Map
+  </a>
+
+  <div id="game-info">
+    <img src="assets/images/green.png" class="character">
+    <div class="info-box">
+      <h3>Score</h3>
+      <p id="score">0</p>
+    </div>
+    <div class="info-box">
+      <h3>Time</h3>
+      <p id="timer">00:00</p>
+    </div>
+    <div class="info-box">
+      <h3>Moves</h3>
+      <p id="moves">0</p>
+    </div>
+    
+    <div class="info-box">
+      <h3>Money</h3>
+      <p id="money-display"><i class="fas fa-coins coin-icon"></i> 0</p>
+    </div>
+  </div>
+  
+  <div class="control-buttons">
+    <button id="restart-btn"><i class="fas fa-redo"></i> Restart</button>
+    <button id="hint-btn" disabled><i class="fas fa-lightbulb"></i> Hint (3)</button>
+  </div>
+  
+  <div id="container">
+    <div class="game-section">
+      <h2><i class="fas fa-th-large"></i> Tiles</h2>
+      <div id="game"></div>
+    </div>
+    <div class="game-section">
+      <h2><i class="fas fa-puzzle-piece"></i> Slots</h2>
+      <div id="full-image-container">
+        <img id="full-image" src="assets/images/tomjerry.png" alt="Full Image Preview" />
+      </div>
+      <div id="slots"></div>
+    </div>
+  </div>
+  
+  <div id="game-over">
+    <h2>Puzzle Complete!</h2>
+    <div id="victory-banner">Excellent Work!</div>
+    
+    <div class="stars-container">
+        <i class="fas fa-star star" id="star-1"></i>
+        <i class="fas fa-star star" id="star-2"></i>
+        <i class="fas fa-star star" id="star-3"></i>
+    </div>
+
+    <div id="final-stats">
+        <div class="stat-card" style="animation-delay: 0.1s">
+            <i class="fas fa-trophy" style="color: #ffd700"></i>
+            <div class="label">Score</div>
+            <div class="value" id="final-score">0</div>
+        </div>
+        <div class="stat-card" style="animation-delay: 0.2s">
+            <i class="fas fa-clock" style="color: #00d2ff"></i>
+            <div class="label">Time</div>
+            <div class="value" id="final-time">00:00</div>
+        </div>
+        <div class="stat-card" style="animation-delay: 0.3s">
+            <i class="fas fa-shoe-prints" style="color: #4caf50"></i>
+            <div class="label">Moves</div>
+            <div class="value" id="final-moves">0</div>
+        </div>
+        <div class="stat-card" style="animation-delay: 0.4s; border: 1px solid var(--gold);">
+            <i class="fas fa-coins" style="color: var(--gold)"></i>
+            <div class="label">Reward</div>
+            <div class="value" id="reward-amount">0</div>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 20px;">
+        <button id="play-again-btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">
+            <i class="fas fa-redo"></i> Go to Map
+        </button>
+        <button id="Next-Level-btn" onclick="goToNextLevel()">
+            Next level <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+  </div>
+
+
+  <audio id="flip-sound" src="assets/audio/ding-sfx-472366.mp3"></audio>
+  <audio id="success-sound" src="assets/audio/ding-sfx-472366.mp3"></audio>
+  <audio id="fail-sound" src="assets/audio/fail-trumpet-02-383962.mp3"></audio>
+  <audio id="complete-sound" src="assets/audio/you-win-sequence-2-183949.mp3"></audio>
+
+  <script src="js/preloader.js"></script>
+  <script src="js/puzzle6.js"></script>
+</body>
+</html>
