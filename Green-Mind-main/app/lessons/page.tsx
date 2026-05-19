@@ -1,220 +1,280 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { IoNotificationsOutline, IoSettingsOutline, IoLogOutOutline } from "react-icons/io5";
-import { Poppins } from "next/font/google";
-import { useAuth } from "@/lib/AuthContext";
-import Sidebar from "@/app/_components/Sidebar";
-import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["300", "400", "600", "700"],
-});
+export default function LessonPage() {
+  const searchParams = useSearchParams();
+  const videoFromUrl = searchParams.get("video");
 
-
-export default function LessonsPage() {
-  const { user, userData, loading } = useAuth();
-  const router = useRouter();
-
-  const [openDropdown, setOpenDropdown] = useState(false);
-  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
-
-  const handleLogout = async () => {
-    await signOut(auth);
-    localStorage.clear();
-    router.push("/login");
-  };
-
-  const lessons = [
-    {
-      id: "video1",
-      title: "Recycling Basics",
-      level: "Level 1 - 2 Min",
-      img: "https://img.youtube.com/vi/FpOWG4GDvx4/maxresdefault.jpg",
-      button: "Start Lesson",
-      video: "https://www.youtube.com/embed/FpOWG4GDvx4",
-    },
-    {
-      id: "video2",
-      title: "Waste Sorting",
-      level: "Level 1 - 2 Min",
-      img: "https://img.youtube.com/vi/V_1vpEEnXW0/maxresdefault.jpg",
-      button: "Start Lesson",
-      video: "https://www.youtube.com/embed/V_1vpEEnXW0",
-    },
-    {
-      id: "video3",
-      title: "Ocean Protection",
-      level: "Level 1 - 2 Min",
-      img: "https://img.youtube.com/vi/aLY46g18hWk/maxresdefault.jpg",
-      button: "Start Lesson",
-      video: "https://www.youtube.com/embed/aLY46g18hWk",
-    },
-    {
-      id: "video4",
-      title: "Parts of A Plant",
-      level: "Level 2 - 4 Min",
-      img: "https://img.youtube.com/vi/tNbTppAbEVc/maxresdefault.jpg",
-      button: "Start Lesson",
-      video: "https://www.youtube.com/embed/tNbTppAbEVc",
-    },
-    {
-      id: "video5",
-      title: "Plant Growth",
-      level: "Level 2 - 4 Min",
-      img: "https://img.youtube.com/vi/AltruHFIBAQ/maxresdefault.jpg",
-      button: "Start Lesson",
-      video: "https://www.youtube.com/embed/AltruHFIBAQ",
-    },
-    {
-      id: "video6",
-      title: "Save Our Earth",
-      level: "Level 2 - 4 Min",
-      img: "https://img.youtube.com/vi/xpAnLXc_bIU/maxresdefault.jpg",
-      button: "Start Lesson",
-      video: "https://www.youtube.com/embed/xpAnLXc_bIU",
-    },
+  const quizzes = [
+    { id: 1, questions: 5 },
+    { id: 2, questions: 5 },
+    { id: 3, questions: 5 },
+ 
   ];
 
-  if (loading) return null;
+  const relatedLessons = [
+  {
+    id: 1,
+    title: "Nature And Environment",
+    level: 1,
+    duration: "3 min",
+    video: "https://www.youtube.com/embed/bg-A5kJi1P8",
+    image: "https://img.youtube.com/vi/bg-A5kJi1P8/maxresdefault.jpg",
+    video_key: "video7"
+  },
+  {
+    id: 2,
+    title: "Protect The Earth",
+    level: 1,
+    duration: "2 min",
+    video: "https://www.youtube.com/embed/37JLoAGdv1c",
+    image: "https://img.youtube.com/vi/37JLoAGdv1c/maxresdefault.jpg",
+    video_key: "video8"
+  },
+  {
+    id: 3,
+    title: "Clean Environment",
+    level: 2,
+    duration: "4 min",
+    video: "https://www.youtube.com/embed/d3z3rsVdKLc",
+    image: "https://img.youtube.com/vi/d3z3rsVdKLc/maxresdefault.jpg",
+    video_key: "video9"
+  },
+  {
+    id: 4,
+    title: "Save Our Planet",
+    level: 2,
+    duration: "3 min",
+    video: "https://www.youtube.com/embed/qWTvC8tBfwY",
+    image: "https://img.youtube.com/vi/qWTvC8tBfwY/hqdefault.jpg",
+    video_key: "video10"
+  },
+];
 
+  const [currentVideo, setCurrentVideo] = useState(
+    relatedLessons[0].video
+  );
+
+  useEffect(() => {
+    if (videoFromUrl) {
+      setCurrentVideo(videoFromUrl);
+    }
+  }, [videoFromUrl]);
+
+
+  const currentVideoId = currentVideo.split("/").pop();
+
+const videoEntry = Object.entries({
+  video1: "FpOWG4GDvx4",
+  video2: "V_1vpEEnXW0",
+  video3: "aLY46g18hWk",
+  video4: "tNbTppAbEVc",
+  video5: "AltruHFIBAQ",
+  video6: "xpAnLXc_bIU",
+  video7: "bg-A5kJi1P8",
+  video8: "37JLoAGdv1c",
+  video9: "d3z3rsVdKLc",
+  video10: "qWTvC8tBfwY",
+}).find(([key, id]) => id === currentVideoId);
+
+const currentVideoKey = videoEntry ? videoEntry[0] : "video1";
+
+const hideQuizVideos = ["video7", "video8", "video9", "video10"];
+
+const showQuiz = !hideQuizVideos.includes(currentVideoKey);
   return (
-    <div
-      className="w-full min-h-screen flex bg-cover bg-center relative"
-      style={{ backgroundImage: "url('/SCreen/growth.png')" }}
-    >
-      
-      
-      <div className="relative z-10 flex w-full h-screen">
-        <Sidebar />
+   
+      <div className="max-w-6xl mx-auto p-6 md:p-10 relative z-10">
 
-        {/* Main */}
-        <div className={`${poppins.className} flex-1 p-4 overflow-y-auto h-full`}>
-          {/* Navbar */}
-          <div className="flex justify-end items-center gap-4 mb-3 backdrop-blur-md p-4 rounded-xl shadow relative z-[999]">
-            <Link href="/" className="hover:text-green-600 transition">
-              Home
-            </Link>
-
-            <IoNotificationsOutline className="text-2xl cursor-pointer" />
-
-            <div className="relative">
-              <IoSettingsOutline
-                className="text-2xl cursor-pointer hover:rotate-90 transition"
-                onClick={() => setOpenDropdown(!openDropdown)}
-              />
-
-              {openDropdown && (
-                <div className="absolute right-0 mt-3 w-48 bg-white shadow-lg rounded-xl border border-gray-100 py-2 z-50">
-                  <button
-                    onClick={() => setShowLogoutPopup(true)}
-                    className="flex items-center gap-2 w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition"
-                  >
-                    <IoLogOutOutline />
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <Image
-              src={userData?.avatar || "/SCreen/cute.png"}
-              width={45}
-              height={45}
-              alt="avatar"
-              className="rounded-full border-2 border-green-400 object-cover h-[45px] w-[45px]"
+        {/* Video Section */}
+        <div className="rounded-xl overflow-hidden shadow-lg">
+          <div className="w-full aspect-video rounded-xl overflow-hidden">
+            <iframe
+              key={currentVideo}
+              className="w-full h-full"
+              src={currentVideo}
+              title="Lesson Video"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
             />
           </div>
-
-          {/* Title */}
-          <h1 className="text-2xl font-semibold mb-2 text-center">Lessons</h1>
-          <div className="w-full h-[1px] bg-gray-300 mb-4"></div>
-
-          {/* Lessons Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {lessons.map((item, i) => {
-              return (
-                <div key={i} className="bg-white rounded-2xl shadow p-2 hover:shadow-md transition">
-                  <Image
-                    src={item.img}
-                    width={210}
-                    height={150}
-                    className="w-full h-[140px] object-cover rounded-2xl"
-                    alt={item.title}
-                  />
-
-                  <div className="text-center mt-8">
-                    <h3 className="font-semibold text-lg">{item.title}</h3>
-                    <p className="text-gray-500 text-sm">{item.level}</p>
-
-                    <Link
-                      href={`/lesson-page?video=${encodeURIComponent(item.video)}&title=${encodeURIComponent(item.title)}&level=${encodeURIComponent(item.level)}`}
-                      className="mt-3 px-5 py-2 rounded-2xl font-medium inline-block text-white text-[18px] bg-[#3EF772] hover:bg-green-500 transition"
-                    >
-                      {item.button}
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
         </div>
-      </div>
 
-      {/* Logout Popup */}
-      {showLogoutPopup && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-[1000]">
-          <div className="bg-white rounded-3xl shadow-2xl p-10 w-[90%] max-w-[480px] text-center relative">
-            <div className="flex justify-center mb-4">
-              <Image
-                src="/SCreen/Group 45.png"
-                width={120}
-                height={120}
-                alt="green character"
-                className="animate-bounce-fast"
-              />
+        {/* Main Content */}
+        <div className="mt-6 flex flex-col md:flex-row gap-6">
+
+          {/* Left */}
+          <div className="flex flex-col gap-6 md:w-[47%]">
+            <div>
+              <h1 className="font-poppins font-medium text-[30px] text-[#0B3D00]">
+                Recycling Basics - Lesson 1
+              </h1>
+              <p className="font-poppins font-normal text-[22px] mt-1 text-[#333333]">
+                Level 1 • Duration: 2 minutes
+              </p>
             </div>
 
-            <h2 className="text-3xl font-bold text-green-700 mb-3">
-              Are you sure you want to logout?
+            <div className="p-1">
+              <h2 className="text-[30px] text-[#333333] font-poppins font-medium">
+                Overview
+              </h2>
+              <div className="mt-3 text-[#000000] font-poppins font-medium text-[18px] leading-6 space-y-2">
+                <p>Learn how recycling helps protect our planet!</p>
+                <p>In this video, kids will discover what recycling means,</p>
+                <p>why it's important, and how simple actions like sorting</p>
+                <p>plastic, paper, and metal ♻️🌍</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right */}
+          <div className="bg-[#EAFBFF] p-4 rounded-lg shadow-sm md:w-[53%]">
+            <h2 className="font-poppins font-normal text-[27px] text-[#000000]">
+              What you will learn
             </h2>
-            <p className="text-gray-600 mb-8">
-              You’ll be redirected to the login page.
-            </p>
+            <ul className="mt-5 list-disc list-inside text-[#666666] font-poppins font-medium text-[21px]">
+              <li>What Recycling Means</li>
+              <li>How To Sort Waste</li>
+              <li>Recyclable Materials</li>
+              <li>Why Recycling Helps Earth</li>
+              <li>Simple Eco Habits</li>
+            </ul>
+          </div>
+        </div>
 
-            <div className="flex justify-center gap-6">
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 text-white px-6 py-3 rounded-xl hover:bg-red-700 transition font-medium text-lg"
-              >
-                Yes, Logout
-              </button>
 
-              <button
-                onClick={() => setShowLogoutPopup(false)}
-                className="bg-gray-300 text-gray-800 px-6 py-3 rounded-xl hover:bg-gray-400 transition font-medium text-lg"
+{/* Quiz */}
+{showQuiz && (
+  <div className="mt-6">
+    <div className="bg-[#fff3cc] p-6 rounded-2xl shadow-md text-center">
+      <h3 className="font-poppins font-semibold text-2xl">
+        Lesson Quiz
+      </h3>
+
+      <p className="text-[#333333] mt-2 mb-5">
+        5 Questions
+      </p>
+
+      <Link
+        href={`/quiz/${currentVideoKey}`}
+        className="inline-block px-8 py-3 bg-[#3EF772] text-white rounded-xl font-bold hover:bg-green-600 transition"
+      >
+        Start Now
+      </Link>
+    </div>
+  </div>
+)}
+        {/* Related Lessons */}
+        <div className="mt-10">
+          <h2 className="font-semibold mb-4 text-xl">Related Lessons</h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+            {relatedLessons.map((lesson) => (
+              <div
+                key={lesson.id}
+                className="bg-[#E6fdE4] p-4 rounded-xl flex items-center gap-8"
               >
-                Cancel
-              </button>
+                <Image
+                  src={lesson.image}
+                  width={150}
+                  height={150}
+                  alt={lesson.title}
+                  className="rounded-xl"
+                />
+
+                <div className="text-center ml-10">
+                  <h3 className="font-semibold">{lesson.title}</h3>
+                  <p className="text-gray-600 text-sm mt-5">
+                    Level {lesson.level} • {lesson.duration}
+                  </p>
+
+
+      <Link
+  href={`/lesson-page?video=${encodeURIComponent(lesson.video)}`}
+  className="mt-2 inline-block text-[#3EF772] px-4 py-1 rounded-full hover:scale-105 transition"
+>
+  Watch
+</Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <header className="w-full bg-[#34c759] py-6 mt-10">
+          <div className="px-10 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Image
+                src="/screen/Group 45.png"
+                width={70}
+                height={70}
+                alt="Green Mind"
+              />
+              <div className="text-white">
+                <h1 className="text-2xl font-bold leading-tight">
+                  Green <br /> Mind
+                </h1>
+                <p className="text-sm opacity-90 mt-2">
+                  Fun Eco-Learning For Kids
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-16 text-white">
+             
+<div>
+  <h3 className="font-semibold mb-2">Explore</h3>
+
+  <ul className="space-y-1 text-sm">
+    <li>
+      <Link href="/lessons" className="hover:text-green-600 transition">
+        Lessons
+      </Link>
+    </li>
+
+    <li>
+      <Link href="/games" className="hover:text-green-600 transition">
+        Games
+      </Link>
+    </li>
+
+   <li>
+    <Link href="/ai-scan" className="hover:text-green-600 transition">
+        AI Plant Scan
+      </Link>
+    </li>
+  </ul>
+</div>
+
+              <div>
+                <h3 className="font-semibold mb-2">Help & Info</h3>
+                <ul className="space-y-1 text-sm">
+                  <li>
+      <Link href="/parent">
+        Parent Guide
+      </Link>
+    </li>
+                  <li><Link href="#">Contact Us</Link></li>
+                  <li><Link href="#">Privacy and Safety</Link></li>
+                </ul>
+              </div> 
+            
+ 
             </div>
           </div>
 
-          <style jsx global>{`
-            @keyframes bounce {
-              0%, 100% { transform: translateY(0); }
-              50% { transform: translateY(-10px); }
-            }
-            .animate-bounce-fast {
-              animation: bounce 1s infinite;
-            }
-          `}</style>
-        </div>
-      )}
-    </div>
+          <p className="text-center text-white text-xs mt-6 opacity-80">
+            © 2025 Green Mind. All Rights Reserved.
+          </p>
+        </header>
+
+      </div>
+   
   );
 }
