@@ -5,10 +5,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  IoNotificationsOutline,
   IoSettingsOutline,
   IoLogOutOutline,
 } from "react-icons/io5";
+import NotificationBell from "@/components/NotificationBell";
 import {
   LineChart,
   Line,
@@ -265,7 +265,13 @@ export default function ParentDashboard() {
   const handleSubmitFeedback = async () => {
     if (!userData?.mood) { toast.info("Please select a mood first 😊"); return; }
     try {
-      await updateUserData({ mood: userData.mood });
+      const randMsg = Math.floor(Math.random() * 5);
+      const randVid = Math.floor(Math.random() * 3);
+      await updateUserData({
+        mood: userData.mood,
+        moodMessageIndex: randMsg,
+        moodVideoIndex: randVid
+      });
       toast.success("Mood feedback saved! ✅");
     } catch {
       toast.error("Failed to save feedback.");
@@ -356,7 +362,7 @@ export default function ParentDashboard() {
               <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">{user?.email}</span>
             </div>
             <Link href="/" className="hover:text-green-600 transition">Home</Link>
-            <IoNotificationsOutline className="text-2xl cursor-pointer hover:text-green-600 transition" />
+            <NotificationBell />
             <div className="relative">
               <IoSettingsOutline className="text-2xl cursor-pointer hover:rotate-90 transition" onClick={() => setOpenDropdown(!openDropdown)} />
               {openDropdown && (
@@ -462,7 +468,15 @@ export default function ParentDashboard() {
                 ].map((m) => (
                   <button
                     key={m.id}
-                    onClick={() => updateUserData({ mood: m.id })}
+                    onClick={() => {
+                      const randMsg = Math.floor(Math.random() * 5);
+                      const randVid = Math.floor(Math.random() * 3);
+                      updateUserData({
+                        mood: m.id,
+                        moodMessageIndex: randMsg,
+                        moodVideoIndex: randVid
+                      });
+                    }}
                     className={`h-[88px] flex flex-col items-center justify-center rounded-3xl transition-all duration-300 border-2 font-medium ${
                       userData?.mood === m.id
                         ? "bg-green-50 border-green-600 text-green-700 shadow-md scale-105"

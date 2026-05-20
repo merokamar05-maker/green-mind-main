@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  IoNotificationsOutline,
   IoSettingsOutline,
   IoLogOutOutline,
 } from "react-icons/io5";
+import NotificationBell from "@/components/NotificationBell";
 import Sidebar from "@/app/_components/Sidebar";
 import { useAuth } from "@/lib/AuthContext";
 import { signOut } from "firebase/auth";
@@ -80,7 +80,7 @@ export default function GamesPage() {
           {!activeGame && (
             <div className="p-6 pb-0">
               <div className="flex justify-end items-center gap-6 p-6 backdrop-blur-md rounded-xl shadow border border-white/20 relative z-[999]">
-                <IoNotificationsOutline className="text-2xl cursor-pointer hover:text-green-600 transition" />
+                <NotificationBell />
                 <div className="relative">
                   <IoSettingsOutline
                     className="text-2xl cursor-pointer hover:rotate-90 transition"

@@ -137,7 +137,7 @@ export default function DynamicQuiz() {
       if (currentLessonNum === progress.maxUnlockedLesson) {
         const nextProgress = { maxUnlockedLesson: currentLessonNum + 1, videoWatched: false };
         localStorage.setItem("greenMindProgress", JSON.stringify(nextProgress));
-        alert(`رائع! لقد أنهيت كويز ${currentLessonNum} بنجاح. تم الآن فتح الدرس ${currentLessonNum + 1}! 🌟`);
+        alert(`Awesome! You completed Quiz ${currentLessonNum} successfully. Lesson ${currentLessonNum + 1} is now unlocked! 🌟`);
       }
     }
 
@@ -184,9 +184,9 @@ export default function DynamicQuiz() {
       });
 
       if (isLevelUp) {
-        alert(`🎉 رائع! لقد حصلت على +${xpGained} XP! وارتفع مستوى شجرتك إلى المستوى ${newTreeLevel}! 🌳`);
+        alert(`🎉 Awesome! You earned +${xpGained} XP! Your tree has grown to Level ${newTreeLevel}! 🌳`);
       } else {
-        alert(`🎉 رائع! لقد حصلت على +${xpGained} XP لإجابتك على الأسئلة! 🌟`);
+        alert(`🎉 Awesome! You earned +${xpGained} XP for answering the questions! 🌟`);
       }
     }
   };

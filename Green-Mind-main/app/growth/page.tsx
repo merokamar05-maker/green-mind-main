@@ -5,11 +5,11 @@ import Image from "next/image";
 import Sidebar from "@/app/_components/Sidebar";
 import Link from "next/link";
 import {
-  IoNotificationsOutline,
   IoSettingsOutline,
   IoLogOutOutline,
   IoLockClosed,
 } from "react-icons/io5";
+import NotificationBell from "@/components/NotificationBell";
 import { Poppins } from "next/font/google";
 import { useAuth } from "@/lib/AuthContext";
 import { signOut } from "firebase/auth";
@@ -162,7 +162,7 @@ export default function TreeGrowthPage() {
 
           {/* Navbar */}
           <div className="absolute top-5 right-10 flex gap-4 items-center z-50">
-            <IoNotificationsOutline className="text-2xl text-white" />
+            <NotificationBell className="text-white" />
             <div className="relative">
               <IoSettingsOutline
                 className="text-2xl text-white cursor-pointer"

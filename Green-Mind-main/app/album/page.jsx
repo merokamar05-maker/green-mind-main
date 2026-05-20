@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  IoNotificationsOutline,
   IoSettingsOutline,
   IoSearch,
   IoLogOutOutline,
 } from "react-icons/io5";
+import NotificationBell from "@/components/NotificationBell";
 import Sidebar from "@/app/_components/Sidebar";
 import { useAuth } from "@/lib/AuthContext";
 import { signOut } from "firebase/auth";
@@ -64,7 +64,7 @@ export default function AlbumPage() {
               Home
             </Link>
 
-            <IoNotificationsOutline className="text-2xl cursor-pointer" />
+            <NotificationBell />
 
             <div className="relative">
               <IoSettingsOutline

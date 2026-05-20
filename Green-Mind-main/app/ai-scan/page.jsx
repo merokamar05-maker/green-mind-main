@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { IoNotificationsOutline, IoSettingsOutline, IoLogOutOutline } from "react-icons/io5";
+import { IoSettingsOutline, IoLogOutOutline } from "react-icons/io5";
+import NotificationBell from "@/components/NotificationBell";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/lib/AuthContext";
@@ -162,7 +163,7 @@ export default function AiScanPage() {
           <div className="flex justify-end items-center gap-4 mb-8 backdrop-blur-md p-4 rounded-xl shadow relative z-[999]">
             <Link href="/" className="hover:text-green-600 transition">Home</Link>
             
-            <IoNotificationsOutline className="text-2xl cursor-pointer" />
+            <NotificationBell />
 
             <div className="relative">
               <IoSettingsOutline

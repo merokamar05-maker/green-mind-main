@@ -5,6 +5,7 @@ import "./globals.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/lib/AuthContext";
+import ChildLockManager from "@/components/ChildLockManager";
 
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -27,6 +28,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased ${poppins.className}`}
       >
         <AuthProvider>
+          <ChildLockManager />
           {children}
           <Toaster position="top-center" richColors />
         </AuthProvider>

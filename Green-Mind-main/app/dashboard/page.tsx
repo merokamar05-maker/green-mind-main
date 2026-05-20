@@ -7,12 +7,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  IoNotificationsOutline,
   IoSettingsOutline,
   IoLogOutOutline,
   IoPersonOutline,
   IoCloseOutline,
 } from "react-icons/io5";
+import NotificationBell from "@/components/NotificationBell";
 import Sidebar from "@/app/_components/Sidebar";
 import { PieChart, Pie, Cell } from "recharts";
 import { signOut } from "firebase/auth";
@@ -246,7 +246,7 @@ export default function Dashboard() {
               Home
             </Link>
 
-            <IoNotificationsOutline className="text-2xl cursor-pointer" />
+            <NotificationBell />
 
             <div className="relative">
               <IoSettingsOutline
@@ -355,10 +355,9 @@ export default function Dashboard() {
                   <p className="text-gray-600 text-sm font-medium">
                     {
                       moodContent[mood]?.messages?.[
-                        Math.floor(
-                          Math.random() *
-                            moodContent[mood].messages.length
-                        )
+                        userData?.moodMessageIndex !== undefined && userData.moodMessageIndex < (moodContent[mood]?.messages?.length || 0)
+                          ? userData.moodMessageIndex
+                          : 0
                       ]
                     }
                   </p>
@@ -394,7 +393,11 @@ export default function Dashboard() {
 
                 <div className="aspect-video w-full max-w-2xl mx-auto rounded-3xl overflow-hidden shadow-2xl">
                   <iframe
-                    src={moodContent[mood].videos[0]}
+                    src={moodContent[mood].videos[
+                      userData?.moodVideoIndex !== undefined && userData.moodVideoIndex < (moodContent[mood]?.videos?.length || 0)
+                        ? userData.moodVideoIndex
+                        : 0
+                    ]}
                     className="w-full h-full"
                     allowFullScreen
                   />

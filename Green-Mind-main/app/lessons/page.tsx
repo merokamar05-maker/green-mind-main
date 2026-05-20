@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { IoNotificationsOutline, IoSettingsOutline, IoLogOutOutline } from "react-icons/io5";
+import { IoSettingsOutline, IoLogOutOutline } from "react-icons/io5";
+import NotificationBell from "@/components/NotificationBell";
 import { Poppins } from "next/font/google";
 import { useAuth } from "@/lib/AuthContext";
 import Sidebar from "@/app/_components/Sidebar";
@@ -101,7 +102,7 @@ export default function LessonsPage() {
               Home
             </Link>
 
-            <IoNotificationsOutline className="text-2xl cursor-pointer" />
+            <NotificationBell />
 
             <div className="relative">
               <IoSettingsOutline

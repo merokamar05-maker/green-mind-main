@@ -140,9 +140,9 @@ function LessonContent() {
         },
       });
       if (isLevelUp) {
-        alert(`🎉 رائع! لقد حصلت على +30 XP لمشاهدة الفيديو! وارتفع مستوى شجرتك إلى المستوى ${newTreeLevel}! 🌳`);
+        alert(`🎉 Awesome! You earned +30 XP for watching the video! Your tree has grown to Level ${newTreeLevel}! 🌳`);
       } else {
-        alert("🎉 رائع! لقد حصلت على +30 XP لمشاهدة الفيديو! 🌟");
+        alert("🎉 Awesome! You earned +30 XP for watching the video! 🌟");
       }
     } catch (err) {
       console.error("Failed to claim video XP:", err);
@@ -197,7 +197,7 @@ function LessonContent() {
 
               {/* Action Banner */}
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm text-white px-6 py-2 rounded-full text-sm font-bold border border-white/20 shadow-md">
-                ▶️ اضغط هنا لتشغيل درس الفيديو
+                ▶️ Click here to play the video lesson
               </div>
             </div>
           )}
@@ -212,28 +212,28 @@ function LessonContent() {
               disabled
               className="bg-green-100 text-green-700 border-2 border-green-300 font-bold px-8 py-3 rounded-2xl flex items-center gap-2 cursor-not-allowed text-base shadow-sm"
             >
-              🎉 تم مشاهدة الفيديو (+30 XP مضافة بالفعل)
+              🎉 Video Watched (+30 XP already added)
             </button>
           ) : !isPlaying ? (
             <button
               disabled
               className="bg-gray-100 text-gray-400 border-2 border-gray-300 font-bold px-8 py-3 rounded-2xl flex items-center gap-2 cursor-not-allowed text-base shadow-sm"
             >
-              ▶️ ابدأ مشاهدة الفيديو أولاً للحصول على الـ XP
+              ▶️ Start watching the video first to get XP
             </button>
           ) : countdown > 0 ? (
             <button
               disabled
               className="bg-amber-100 text-amber-600 border-2 border-amber-300 font-bold px-8 py-3 rounded-2xl flex items-center gap-2 cursor-not-allowed text-base shadow-sm animate-pulse"
             >
-              ⏳ يرجى مشاهدة الدرس للحصول على الـ XP... ({countdown} ثوانٍ)
+              ⏳ Please watch the lesson to get XP... ({countdown} seconds)
             </button>
           ) : (
             <button
               onClick={handleClaimVideoXp}
               className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-white font-bold px-8 py-3 rounded-2xl shadow-[0_0_20px_rgba(245,158,11,0.5)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer text-base animate-bounce"
             >
-              ⭐ اضغط هنا للحصول على +30 XP لمشاهدة الفيديو!
+              ⭐ Click here to claim +30 XP for watching the video!
             </button>
           )}
         </div>
