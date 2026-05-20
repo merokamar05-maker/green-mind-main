@@ -344,12 +344,6 @@ export default function ParentDashboard() {
                 <span>Child Dashboard</span>
               </div>
             </Link>
-            <Link href="/choose" className="block">
-              <div className="px-4 py-3 rounded-2xl flex items-center gap-3 text-white hover:bg-white/20 transition font-medium cursor-pointer">
-                <Image src="/SCreen/child.png" width={28} height={28} alt="switch" className="rounded-full object-cover" />
-                <span>Switch User</span>
-              </div>
-            </Link>
           </div>
         </div>
 
