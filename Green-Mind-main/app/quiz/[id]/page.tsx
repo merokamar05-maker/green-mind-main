@@ -15,7 +15,14 @@ interface QuizQuestion {
 }
 
 export default function DynamicQuiz() {
-  const { user, userData, updateUserData } = useAuth();
+  const { user, userData, updateUserData, activeChildIndex } = useAuth();
+
+  /* Map quiz ID → game that gets unlocked (for child accounts 2 & 3) */
+  const QUIZ_UNLOCK_GAME: Record<string, string> = {
+    video1: "Puzzle 🧩",
+    video2: "Memory Card 🧠",
+    video3: "Sundew Valley 🌾",
+  };
   const params = useParams();
   const router = useRouter();
   const quizId = (params.id as string) || "video1";
@@ -183,11 +190,23 @@ export default function DynamicQuiz() {
         }
       });
 
+      /* ── Build alert message ── */
+      const isLockedChild = activeChildIndex === 1 || activeChildIndex === 2;
+      const unlockedGame  = QUIZ_UNLOCK_GAME[quizId];
+
+      let alertMsg = "";
       if (isLevelUp) {
-        alert(`🎉 Awesome! You earned +${xpGained} XP! Your tree has grown to Level ${newTreeLevel}! 🌳`);
+        alertMsg = `🎉 Awesome! You earned +${xpGained} XP!\nYour tree has grown to Level ${newTreeLevel}! 🌳`;
       } else {
-        alert(`🎉 Awesome! You earned +${xpGained} XP for answering the questions! 🌟`);
+        alertMsg = `🎉 Awesome! You earned +${xpGained} XP for answering the questions! 🌟`;
       }
+
+      /* Append game-unlock notice for child 2 & 3 */
+      if (isLockedChild && unlockedGame) {
+        alertMsg += `\n\n🔓 The ${unlockedGame} game has been unlocked! Go enjoy it now!`;
+      }
+
+      alert(alertMsg);
     }
   };
 
