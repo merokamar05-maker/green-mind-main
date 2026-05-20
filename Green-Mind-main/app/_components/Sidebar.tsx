@@ -75,13 +75,7 @@ export default function Sidebar() {
           active={pathname === "/parent"} 
           isImage={true}
         />
-        <MenuItem 
-          title="Switch User" 
-          icon="/SCreen/child.png" 
-          href="/choose" 
-          active={pathname === "/choose"} 
-          isImage={true}
-        />
+
       </div>
     </div>
   );

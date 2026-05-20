@@ -152,8 +152,15 @@ export default function DynamicQuiz() {
         quizScores: {},
         gamesProgress: { puzzle: 0, memory: 0, matching: 0 },
         treeLevel: 1,
-        weeklyProgress: [0, 0, 0, 0, 0, 0, 0]
+        weeklyProgress: [0, 0, 0, 0, 0, 0, 0],
+        xp: 0
       };
+
+      const xpGained = correctCount * 10;
+      const currentXp = currentProgress.xp || 0;
+      const newXp = currentXp + xpGained;
+      const newTreeLevel = Math.min(5, Math.floor(newXp / 100) + 1);
+      const isLevelUp = newTreeLevel > (currentProgress.treeLevel || 1);
 
       const newQuizScores = { ...(currentProgress.quizScores || {}), [quizId]: score };
       const newLessonsCompleted = [...(currentProgress.lessonsCompleted || [])];
@@ -168,11 +175,19 @@ export default function DynamicQuiz() {
       await updateUserData({
         progress: {
           ...currentProgress,
+          xp: newXp,
+          treeLevel: newTreeLevel,
           quizScores: newQuizScores,
           lessonsCompleted: newLessonsCompleted,
           weeklyProgress: newWeeklyProgress
         }
       });
+
+      if (isLevelUp) {
+        alert(`🎉 رائع! لقد حصلت على +${xpGained} XP! وارتفع مستوى شجرتك إلى المستوى ${newTreeLevel}! 🌳`);
+      } else {
+        alert(`🎉 رائع! لقد حصلت على +${xpGained} XP لإجابتك على الأسئلة! 🌟`);
+      }
     }
   };
 

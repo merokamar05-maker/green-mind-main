@@ -18,6 +18,7 @@ import { PieChart, Pie, Cell } from "recharts";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/lib/AuthContext";
+import { toast } from "sonner";
 
 /* ==================== DATA ==================== */
 
@@ -155,6 +156,57 @@ export default function Dashboard() {
       router.replace("/login");
     }
   }, [user, loading, router]);
+
+  // Check and update daily login sunshine progress
+  useEffect(() => {
+    if (userData && !loading) {
+      const todayStr = new Date().toDateString(); // e.g., "Wed May 20 2026"
+      const lastLoginDate = userData.progress?.lastLoginDate;
+
+      if (lastLoginDate !== todayStr) {
+        const currentProgress = userData.progress || {
+          scansCount: 0,
+          lessonsCompleted: [],
+          quizScores: {},
+          gamesProgress: { puzzle: 0, memory: 0, matching: 0 },
+          treeLevel: 1,
+          weeklyProgress: [0, 0, 0, 0, 0, 0, 0],
+          xp: 0,
+          sunCount: 0,
+          lastLoginDate: ""
+        };
+
+        const newSunCount = (currentProgress.sunCount || 0) + 1;
+        let finalSunCount = newSunCount;
+        let newXp = currentProgress.xp || 0;
+        let newTreeLevel = currentProgress.treeLevel || 1;
+        let earnedBonus = false;
+
+        if (newSunCount >= 5) {
+          finalSunCount = 0; // reset
+          newXp += 50; // award 50 XP bonus
+          newTreeLevel = Math.min(5, Math.floor(newXp / 100) + 1);
+          earnedBonus = true;
+        }
+
+        updateUserData({
+          progress: {
+            ...currentProgress,
+            sunCount: finalSunCount,
+            xp: newXp,
+            treeLevel: newTreeLevel,
+            lastLoginDate: todayStr
+          }
+        }).then(() => {
+          if (earnedBonus) {
+            toast.success("🎉 Amazing! You logged in for 5 days and earned a +50 XP bonus! ☀");
+          } else {
+            toast.success(`☀ New active day! Sunshine progress: ${newSunCount}/5`);
+          }
+        }).catch(err => console.error("Failed to update daily login:", err));
+      }
+    }
+  }, [userData, loading]);
 
   if (loading)
     return (
@@ -297,7 +349,7 @@ export default function Dashboard() {
                 <div className="text-left">
                   <h4 className="font-bold text-blue-600">
                     {moodContent[mood]?.title ||
-                      `${mood} :مزاجك اليوم`}
+                      `Today's Mood: ${mood}`}
                   </h4>
 
                   <p className="text-gray-600 text-sm font-medium">
@@ -337,7 +389,7 @@ export default function Dashboard() {
 
                 <h3 className="text-xl font-bold text-orange-600 mb-4 flex items-center gap-2 text-left">
                   <span>🎥</span>
-                  فيديو خاص عشان يغير مودك!
+                  A special video to boost your mood!
                 </h3>
 
                 <div className="aspect-video w-full max-w-2xl mx-auto rounded-3xl overflow-hidden shadow-2xl">
@@ -387,7 +439,7 @@ export default function Dashboard() {
           <Image
             src={`/tree/growth${Math.min(
               5,
-              Math.max(1, Math.ceil(progress.treeLevel / 2))
+              Math.max(1, progress.treeLevel)
             )}.png`}
             width={150}
             height={150}

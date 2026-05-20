@@ -17,6 +17,10 @@ export interface ChildProgress {
   weeklyProgress: number[];
   waterCount: number;
   sunCount: number;
+  xp?: number;
+  watchedVideos?: string[];
+  lastWateredTime?: number;
+  lastLoginDate?: string;
 }
 
 export interface ChildData {
@@ -43,7 +47,7 @@ interface AuthContextType {
 
 /* ===========================
    Defaults
-=========================== */
+   =========================== */
 export const defaultProgress: ChildProgress = {
   scansCount: 0,
   lessonsCompleted: [],
@@ -53,6 +57,10 @@ export const defaultProgress: ChildProgress = {
   weeklyProgress: [0, 0, 0, 0, 0, 0, 0],
   waterCount: 0,
   sunCount: 0,
+  xp: 0,
+  watchedVideos: [],
+  lastWateredTime: 0,
+  lastLoginDate: "",
 };
 
 const AuthContext = createContext<AuthContextType>({

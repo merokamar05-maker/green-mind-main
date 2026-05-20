@@ -81,11 +81,15 @@ export default function AiScanPage() {
           quizScores: {},
           gamesProgress: { puzzle: 0, memory: 0, matching: 0 },
           treeLevel: 1,
-          weeklyProgress: [0, 0, 0, 0, 0, 0, 0]
+          weeklyProgress: [0, 0, 0, 0, 0, 0, 0],
+          xp: 0
         };
 
         const newScansCount = (currentProgress.scansCount || 0) + 1;
-        const newTreeLevel = Math.max(currentProgress.treeLevel || 1, Math.ceil(newScansCount / 2));
+        const xpGained = 20;
+        const currentXp = currentProgress.xp || 0;
+        const newXp = currentXp + xpGained;
+        const newTreeLevel = Math.min(5, Math.floor(newXp / 100) + 1);
         const todayIndex = new Date().getDay();
         const newWeeklyProgress = [...(currentProgress.weeklyProgress || [0, 0, 0, 0, 0, 0, 0])];
         newWeeklyProgress[todayIndex] = Math.min(100, (newWeeklyProgress[todayIndex] || 0) + 10);
@@ -94,6 +98,7 @@ export default function AiScanPage() {
           progress: {
             ...currentProgress,
             scansCount: newScansCount,
+            xp: newXp,
             treeLevel: newTreeLevel,
             weeklyProgress: newWeeklyProgress
           }

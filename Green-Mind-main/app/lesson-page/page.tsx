@@ -5,9 +5,11 @@ import Link from "next/link";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { IoArrowBackOutline } from "react-icons/io5";
+import { useAuth } from "@/lib/AuthContext";
 
 /* ---- Inner component that uses useSearchParams ---- */
 function LessonContent() {
+  const { userData, updateUserData } = useAuth();
   const searchParams = useSearchParams();
   const videoFromUrl = searchParams.get("video");
 
@@ -59,12 +61,19 @@ function LessonContent() {
   const [currentVideo, setCurrentVideo] = useState(
     relatedLessons[0].video
   );
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [countdown, setCountdown] = useState(10);
 
   useEffect(() => {
     if (videoFromUrl) {
       setCurrentVideo(videoFromUrl);
     }
   }, [videoFromUrl]);
+
+  useEffect(() => {
+    setIsPlaying(false);
+    setCountdown(10);
+  }, [currentVideo]);
 
   const currentVideoId = currentVideo.split("/").pop();
 
@@ -82,8 +91,63 @@ function LessonContent() {
   }).find(([key, id]) => id === currentVideoId);
 
   const currentVideoKey = videoEntry ? videoEntry[0] : "video1";
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    const isAlreadyWatched = userData?.progress?.watchedVideos?.includes(currentVideoKey);
+
+    if (isPlaying && countdown > 0 && !isAlreadyWatched) {
+      interval = setInterval(() => {
+        setCountdown((c) => c - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, countdown, userData, currentVideoKey]);
   const hideQuizVideos = ["video7", "video8", "video9", "video10"];
   const showQuiz = !hideQuizVideos.includes(currentVideoKey);
+
+  const lessonObj = relatedLessons.find(lesson => lesson.video === currentVideo);
+  const coverImage = lessonObj?.image || `https://img.youtube.com/vi/${currentVideoId}/maxresdefault.jpg`;
+
+  const handleClaimVideoXp = async () => {
+    if (!userData) return;
+    const currentProgress = userData.progress || {
+      scansCount: 0,
+      lessonsCompleted: [],
+      quizScores: {},
+      gamesProgress: { puzzle: 0, memory: 0, matching: 0 },
+      treeLevel: 1,
+      weeklyProgress: [0, 0, 0, 0, 0, 0, 0],
+      xp: 0
+    };
+
+    const watched = currentProgress.watchedVideos || [];
+    if (watched.includes(currentVideoKey)) return;
+
+    const newWatched = [...watched, currentVideoKey];
+    const currentXp = currentProgress.xp || 0;
+    const newXp = currentXp + 30;
+    const newTreeLevel = Math.min(5, Math.floor(newXp / 100) + 1);
+    const isLevelUp = newTreeLevel > (currentProgress.treeLevel || 1);
+
+    try {
+      await updateUserData({
+        progress: {
+          ...currentProgress,
+          xp: newXp,
+          treeLevel: newTreeLevel,
+          watchedVideos: newWatched,
+        },
+      });
+      if (isLevelUp) {
+        alert(`🎉 رائع! لقد حصلت على +30 XP لمشاهدة الفيديو! وارتفع مستوى شجرتك إلى المستوى ${newTreeLevel}! 🌳`);
+      } else {
+        alert("🎉 رائع! لقد حصلت على +30 XP لمشاهدة الفيديو! 🌟");
+      }
+    } catch (err) {
+      console.error("Failed to claim video XP:", err);
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-6 md:p-10 relative z-10">
@@ -99,19 +163,81 @@ function LessonContent() {
       </div>
 
       {/* Video Section */}
-      <div className="rounded-xl overflow-hidden shadow-lg">
-        <div className="w-full aspect-video rounded-xl overflow-hidden">
-          <iframe
-            key={currentVideo}
-            className="w-full h-full"
-            src={currentVideo}
-            title="Lesson Video"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
+      <div className="rounded-xl overflow-hidden shadow-lg border-4 border-green-200/50">
+        <div className="w-full aspect-video rounded-xl overflow-hidden relative bg-black flex items-center justify-center">
+          {isPlaying ? (
+            <iframe
+              key={currentVideo}
+              className="w-full h-full"
+              src={`${currentVideo}?autoplay=1`}
+              title="Lesson Video"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          ) : (
+            <div 
+              onClick={() => setIsPlaying(true)}
+              className="group absolute inset-0 cursor-pointer flex items-center justify-center overflow-hidden transition-all duration-300"
+            >
+              {/* Background Thumbnail Image */}
+              <Image 
+                src={coverImage} 
+                fill 
+                alt="Video Thumbnail"
+                className="object-cover group-hover:scale-105 transition-transform duration-500 brightness-[0.8]"
+              />
+
+              {/* Glowing Play Button overlay */}
+              <div className="absolute w-20 h-20 bg-green-500/80 hover:bg-green-600 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(34,197,94,0.6)] group-hover:scale-110 active:scale-95 transition-all border-4 border-white/50 z-20">
+                <svg className="w-8 h-8 text-white ml-1.5 fill-current" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+
+              {/* Action Banner */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm text-white px-6 py-2 rounded-full text-sm font-bold border border-white/20 shadow-md">
+                ▶️ اضغط هنا لتشغيل درس الفيديو
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Claim XP Button */}
+      {userData && (
+        <div className="mt-4 flex justify-center">
+          {userData.progress?.watchedVideos?.includes(currentVideoKey) ? (
+            <button
+              disabled
+              className="bg-green-100 text-green-700 border-2 border-green-300 font-bold px-8 py-3 rounded-2xl flex items-center gap-2 cursor-not-allowed text-base shadow-sm"
+            >
+              🎉 تم مشاهدة الفيديو (+30 XP مضافة بالفعل)
+            </button>
+          ) : !isPlaying ? (
+            <button
+              disabled
+              className="bg-gray-100 text-gray-400 border-2 border-gray-300 font-bold px-8 py-3 rounded-2xl flex items-center gap-2 cursor-not-allowed text-base shadow-sm"
+            >
+              ▶️ ابدأ مشاهدة الفيديو أولاً للحصول على الـ XP
+            </button>
+          ) : countdown > 0 ? (
+            <button
+              disabled
+              className="bg-amber-100 text-amber-600 border-2 border-amber-300 font-bold px-8 py-3 rounded-2xl flex items-center gap-2 cursor-not-allowed text-base shadow-sm animate-pulse"
+            >
+              ⏳ يرجى مشاهدة الدرس للحصول على الـ XP... ({countdown} ثوانٍ)
+            </button>
+          ) : (
+            <button
+              onClick={handleClaimVideoXp}
+              className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-white font-bold px-8 py-3 rounded-2xl shadow-[0_0_20px_rgba(245,158,11,0.5)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer text-base animate-bounce"
+            >
+              ⭐ اضغط هنا للحصول على +30 XP لمشاهدة الفيديو!
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="mt-6 flex flex-col md:flex-row gap-6">

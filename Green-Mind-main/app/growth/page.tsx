@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Sidebar from "@/app/_components/Sidebar";
 import Link from "next/link";
@@ -22,16 +22,14 @@ const poppins = Poppins({
   weight: ["300", "400", "600", "700"],
 });
 
-/* Tree level images */
-const baseLevels = 5;
-const levels = Array.from({ length: baseLevels * 2 }, (_, i) => {
-  const index = Math.floor(i / 2);
-  return {
-    id: i,
-    img: i === 0 ? "/tree/growth1.png" : `/tree/growth${index + 1}.png`,
-    blur: i % 2 === 0,
-  };
-});
+/* Simplified 5 plant growth levels */
+const levels = [
+  { id: 0, img: "/tree/growth1.png", name: "Level 1 - Seedling" },
+  { id: 1, img: "/tree/growth2.png", name: "Level 2 - Sprout" },
+  { id: 2, img: "/tree/growth3.png", name: "Level 3 - Sapling" },
+  { id: 3, img: "/tree/growth4.png", name: "Level 4 - Young Tree" },
+  { id: 4, img: "/tree/growth5.png", name: "Level 5 - Mature Tree" },
+];
 
 const MAX_WATER = 5;
 
@@ -43,66 +41,93 @@ export default function TreeGrowthPage() {
   const [openDropdown, setOpenDropdown] = useState(false);
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const [waterAnimating, setWaterAnimating] = useState(false);
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
 
   /* ---------- Derived values ---------- */
   const treeLevel  = userData?.progress?.treeLevel  ?? 1;
   const waterCount = userData?.progress?.waterCount ?? 0;
+  const xp         = userData?.progress?.xp         ?? 0;
+  const lastWateredTime = userData?.progress?.lastWateredTime ?? 0;
 
-  /**
-   * A child can view any level up to (treeLevel * 2 - 1).
-   * e.g. treeLevel=1 → can see index 0 and 1
-   *       treeLevel=2 → can see index 0‥3
-   */
-  const unlockedUpTo = Math.min(treeLevel * 2 - 1, levels.length - 1);
-  const isNextLocked = currentLevel >= unlockedUpTo;
+  // Level is locked if its index is >= user's treeLevel
+  const isCurrentLevelLocked = currentLevel >= treeLevel;
+  const isPrevLocked = currentLevel - 1 >= treeLevel;
+  const isNextLocked = currentLevel + 1 >= treeLevel;
+
+  /* ---------- Cooldown Timer ---------- */
+  useEffect(() => {
+    const COOLDOWN_MS = 8 * 60 * 60 * 1000; // 8 hours
+    const updateTimer = () => {
+      const elapsed = Date.now() - lastWateredTime;
+      if (elapsed < COOLDOWN_MS && lastWateredTime > 0) {
+        setCooldownRemaining(COOLDOWN_MS - elapsed);
+      } else {
+        setCooldownRemaining(0);
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [lastWateredTime]);
+
+  const formatTime = (ms: number) => {
+    const totalSecs = Math.floor(ms / 1000);
+    const hrs = Math.floor(totalSecs / 3600);
+    const mins = Math.floor((totalSecs % 3600) / 60);
+    const secs = totalSecs % 60;
+    return `${hrs}h ${mins}m ${secs}s`;
+  };
 
   /* ---------- Navigation ---------- */
   const next = () => {
     if (currentLevel < levels.length - 1) {
-      if (isNextLocked) {
-        toast.info("🔒 Complete more lessons and scans to unlock the next level!");
-        return;
-      }
       setCurrentLevel((v) => v + 1);
     }
   };
 
   const prev = () => {
-    if (currentLevel > 0) setCurrentLevel((v) => v - 1);
+    if (currentLevel > 0) {
+      setCurrentLevel((v) => v - 1);
+    }
   };
 
   /* ---------- Water My Tree ---------- */
   const handleWater = async () => {
     if (!userData) return;
 
-    if (waterCount >= MAX_WATER) {
-      toast.info("💧 You've already fully watered your tree today! Come back tomorrow 🌿");
+    if (cooldownRemaining > 0) {
+      toast.info(`⏳ Please wait ${formatTime(cooldownRemaining)} before watering again!`);
       return;
     }
 
     setWaterAnimating(true);
-    setTimeout(() => setWaterAnimating(false), 800);
+    setTimeout(() => setWaterAnimating(false), 1200);
+
+    const xpGained = 20;
+    const newXp = xp + xpGained;
+    const newTreeLevel = Math.min(5, Math.floor(newXp / 100) + 1);
+    const isLevelUp = newTreeLevel > treeLevel;
 
     const newWater = waterCount + 1;
-    let newTreeLevel = treeLevel;
-    let finalWater = newWater;
-
-    if (newWater >= MAX_WATER) {
-      newTreeLevel = treeLevel + 1;
-      finalWater = 0;
-      toast.success("🎉 Your tree leveled up! It grew to Level " + newTreeLevel + "!");
-    } else {
-      toast.success(`💧 Tree watered! ${newWater}/${MAX_WATER}`);
-    }
+    const finalWater = newWater >= 5 ? 0 : newWater;
 
     try {
       await updateUserData({
         progress: {
           ...userData.progress,
           waterCount: finalWater,
+          xp: newXp,
           treeLevel: newTreeLevel,
+          lastWateredTime: Date.now(),
         },
       });
+
+      if (isLevelUp) {
+        toast.success(`🎉 Your tree leveled up! It grew to Level ${newTreeLevel}! 🌳`);
+      } else {
+        toast.success(`💧 Tree watered! You earned +20 XP!`);
+      }
     } catch {
       toast.error("Failed to save. Please try again.");
     }
@@ -168,14 +193,51 @@ export default function TreeGrowthPage() {
             Tree Growth — Level {treeLevel}
           </h1>
 
+          {/* XP Progress Bar on the Left */}
+          <div className="absolute left-8 top-1/3 -translate-y-1/2 flex flex-col items-center gap-3 z-40 select-none">
+            {/* Top Leaf/Star icon */}
+            <div className="w-10 h-10 bg-gradient-to-tr from-[#3EF772] to-[#34c759] rounded-2xl flex items-center justify-center shadow-lg animate-bounce">
+              <span className="text-xl">⭐</span>
+            </div>
+
+            {/* Bar Container */}
+            <div className="relative w-8 h-[280px] bg-white/30 backdrop-blur-md rounded-full border border-white/40 overflow-hidden shadow-[inset_0_2px_4px_rgba(0,0,0,0.2),_0_4px_12px_rgba(0,0,0,0.1)] flex flex-col justify-end">
+              <div
+                className="w-full bg-gradient-to-t from-emerald-400 via-green-400 to-[#3EF772] rounded-full transition-all duration-1000 shadow-[0_0_12px_rgba(52,211,153,0.7)]"
+                style={{ height: `${xp % 100}%` }}
+              />
+
+              {/* Progress markers inside */}
+              <div className="absolute inset-0 flex flex-col justify-between py-6 text-[9px] text-green-950 font-black items-center pointer-events-none opacity-85">
+                <span>100</span>
+                <span>75</span>
+                <span>50</span>
+                <span>25</span>
+                <span>0</span>
+              </div>
+            </div>
+
+            {/* XP and Level Info */}
+            <div className="text-center drop-shadow-md">
+              <span className="block text-[10px] text-green-900 font-bold uppercase tracking-wider bg-white/40 px-2 py-0.5 rounded-full backdrop-blur-sm">Level XP</span>
+              <span className="block text-lg font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-1">{xp % 100} / 100</span>
+              <span className="block text-[11px] text-green-900 font-bold mt-1 bg-white/40 px-2 py-0.5 rounded-full backdrop-blur-sm">Total: {xp} XP</span>
+            </div>
+          </div>
+
           {/* Tree Area */}
           <div className="flex justify-center items-center mt-10 relative">
 
             {/* Prev preview */}
             {currentLevel > 0 && (
               <div className="absolute left-[18%] top-[70%] -translate-y-1/2">
-                <div className="w-[160px] h-[160px] rounded-full bg-white/5 backdrop-blur-sm flex items-center justify-center">
-                  <Image src={levels[currentLevel - 1].img} width={110} height={110} alt="" />
+                <div className={`w-[160px] h-[160px] rounded-full bg-white/5 backdrop-blur-sm flex items-center justify-center relative overflow-hidden ${isPrevLocked ? "opacity-60" : ""}`}>
+                  <Image src={levels[currentLevel - 1].img} width={110} height={110} alt="" className={isPrevLocked ? "blur-[2px]" : ""} />
+                  {isPrevLocked && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/45 rounded-full">
+                      <IoLockClosed className="text-white text-2xl" />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -183,11 +245,11 @@ export default function TreeGrowthPage() {
             {/* Next preview */}
             {currentLevel < levels.length - 1 && (
               <div className="absolute right-[18%] top-[70%] -translate-y-1/2">
-                <div className={`w-[160px] h-[160px] rounded-full bg-white/5 backdrop-blur-sm flex items-center justify-center ${isNextLocked ? "opacity-40" : ""}`}>
-                  <Image src={levels[currentLevel + 1].img} width={110} height={110} alt="" />
+                <div className={`w-[160px] h-[160px] rounded-full bg-white/5 backdrop-blur-sm flex items-center justify-center relative overflow-hidden ${isNextLocked ? "opacity-60" : ""}`}>
+                  <Image src={levels[currentLevel + 1].img} width={110} height={110} alt="" className={isNextLocked ? "blur-[2px]" : ""} />
                   {isNextLocked && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full">
-                      <IoLockClosed className="text-white text-3xl" />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/45 rounded-full">
+                      <IoLockClosed className="text-white text-2xl" />
                     </div>
                   )}
                 </div>
@@ -211,28 +273,38 @@ export default function TreeGrowthPage() {
 
               <div className="absolute w-full h-full blur-[1px] rounded-full" />
 
-              <div className="w-[320px] h-[320px] rounded-full backdrop-blur-xl flex items-center justify-center border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.4)]">
+              <div className="w-[320px] h-[320px] rounded-full backdrop-blur-xl flex items-center justify-center border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.4)] relative overflow-hidden">
                 <Image
                   src={levels[currentLevel].img}
                   width={190}
                   height={190}
                   alt="tree"
                   className={`transition-all duration-500 ${
-                    currentLevel === 0
+                    currentLevel === 0 && currentLevel < treeLevel
                       ? "animate-pulse"
-                      : levels[currentLevel].blur
-                      ? "blur-[1px] opacity-80"
+                      : isCurrentLevelLocked
+                      ? "blur-[6px] opacity-60 scale-95"
                       : "blur-0 opacity-100"
-                  }`}
+                  } ${waterAnimating ? "animate-bounce scale-110" : ""}`}
                 />
-              </div>
 
-              {/* Lock icon on blurred levels */}
-              {levels[currentLevel].blur && (
-                <div className="absolute top-[60px] right-[80px] bg-black/60 p-2 rounded-full">
-                  <IoLockClosed className="text-white text-[30px]" />
-                </div>
-              )}
+                {/* Watering Splash Effect */}
+                {waterAnimating && (
+                  <div className="absolute inset-0 bg-blue-500/10 flex items-center justify-center animate-fade-in pointer-events-none rounded-full">
+                    <span className="text-6xl animate-bounce">💧</span>
+                  </div>
+                )}
+
+                {/* Lock icon overlay inside the circle */}
+                {isCurrentLevelLocked && (
+                  <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center backdrop-blur-sm transition-all duration-300">
+                    <IoLockClosed className="text-white text-5xl mb-2 drop-shadow-md animate-pulse" />
+                    <span className="text-white font-bold text-sm bg-green-700/80 border border-green-400 px-4 py-1.5 rounded-full shadow">
+                      Unlocks at Level {currentLevel + 1}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -249,9 +321,7 @@ export default function TreeGrowthPage() {
           {currentLevel < levels.length - 1 && (
             <button
               onClick={next}
-              className={`absolute right-[22%] top-1/2 -translate-y-1/2 p-2 rounded-full transition ${
-                isNextLocked ? "opacity-40 hover:opacity-60" : "hover:opacity-80"
-              }`}
+              className="absolute right-[22%] top-1/2 -translate-y-1/2 p-2 rounded-full transition hover:opacity-80"
             >
               <Image src="/sCreen/star1.png" width={60} height={60} alt="next" />
               {isNextLocked && (
@@ -319,24 +389,30 @@ export default function TreeGrowthPage() {
             {/* Water Button */}
             <button
               onClick={handleWater}
-              disabled={waterCount >= MAX_WATER}
-              className={`w-full rounded-full px-3 py-2 text-center font-semibold transition active:scale-95 ${
-                waterCount >= MAX_WATER
-                  ? "bg-gray-300/50 text-gray-500 cursor-not-allowed"
+              disabled={cooldownRemaining > 0}
+              className={`w-full rounded-full px-3 py-2.5 text-center font-semibold transition-all active:scale-95 text-sm ${
+                cooldownRemaining > 0
+                  ? "bg-gray-300/60 text-gray-500 cursor-not-allowed border border-gray-400/20"
                   : waterAnimating
                   ? "bg-blue-300/70 scale-95"
-                  : "bg-white/40 text-[#3c3c3c] hover:bg-blue-100/60 cursor-pointer"
+                  : "bg-gradient-to-r from-blue-400 to-indigo-400 hover:from-blue-500 hover:to-indigo-500 text-white shadow-md cursor-pointer hover:scale-[1.02]"
               }`}
             >
-              {waterCount >= MAX_WATER ? "✅ Fully Watered!" : "💧 Water My Tree"}
+              {cooldownRemaining > 0 ? (
+                <span className="flex items-center justify-center gap-1">
+                  ⏳ Cooldown: {formatTime(cooldownRemaining)}
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-1">
+                  💧 Water My Tree (+20 XP)
+                </span>
+              )}
             </button>
 
             {/* Level up hint */}
-            {waterCount > 0 && waterCount < MAX_WATER && (
-              <p className="text-[9px] text-center text-white/80 mt-1">
-                {MAX_WATER - waterCount} more waters to level up! 🌱
-              </p>
-            )}
+            <p className="text-[10px] text-center text-white/95 mt-2 font-medium">
+              🌱 Level up in {100 - (xp % 100)} XP!
+            </p>
           </div>
 
         </div>
