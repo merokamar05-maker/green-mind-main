@@ -437,10 +437,19 @@ export default function ParentDashboard() {
                 </ResponsiveContainer>
               </div>
             </div>
-            <div className="bg-white rounded-3xl shadow-md p-6 text-center">
-              <h3 className="font-semibold mb-4">Quiz Scores</h3>
-              <div className="flex justify-between items-end h-[180px]">
-                {displayQuizScores.map((q, i) => <AnimatedBar key={i} label={q.label} value={q.value} />)}
+            <div className="bg-white rounded-3xl shadow-md p-6">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="font-bold text-gray-800 text-base">Quiz Scores</h3>
+                <span className="text-xs font-bold bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                  Avg {avgQuizScore}%
+                </span>
+              </div>
+              {/* Bars */}
+              <div className="flex flex-col gap-3">
+                {displayQuizScores.map((q, i) => (
+                  <AnimatedBar key={i} label={q.label} value={q.value} index={i} />
+                ))}
               </div>
             </div>
           </div>
@@ -557,17 +566,45 @@ function StatCard({ title, subtitle, value, icon }: { title: string; subtitle: s
   );
 }
 
-function AnimatedBar({ value, label }: { value: number; label: string }) {
-  const [height, setHeight] = useState("0%");
+function AnimatedBar({ value, label, index }: { value: number; label: string; index: number }) {
+  const [width, setWidth] = useState("0%");
+
   useEffect(() => {
-    const t = setTimeout(() => setHeight(`${value}%`), 200);
+    const t = setTimeout(() => setWidth(`${value}%`), 150 + index * 100);
     return () => clearTimeout(t);
-  }, [value]);
+  }, [value, index]);
+
+  // Color based on score
+  const color =
+    value >= 80 ? { from: "#16a34a", to: "#4ade80", bg: "#f0fdf4", text: "#15803d" }
+    : value >= 50 ? { from: "#d97706", to: "#fcd34d", bg: "#fffbeb", text: "#b45309" }
+    : { from: "#dc2626", to: "#f87171", bg: "#fef2f2", text: "#b91c1c" };
+
   return (
-    <div className="flex flex-col items-center gap-1 transition-all duration-700 ease-in-out">
-      <span className="text-xs font-medium">{value}%</span>
-      <div className="w-10 bg-gradient-to-t from-green-600 to-green-400 rounded-full" style={{ height }} />
-      <span className="text-sm">{label}</span>
+    <div className="flex items-center gap-3">
+      {/* Label */}
+      <span className="text-xs font-bold text-gray-500 w-[44px] shrink-0">{label}</span>
+
+      {/* Bar track */}
+      <div className="flex-1 h-[26px] rounded-full overflow-hidden" style={{ background: color.bg }}>
+        <div
+          className="h-full rounded-full flex items-center justify-end pr-2 transition-all duration-700 ease-out"
+          style={{
+            width,
+            background: `linear-gradient(90deg, ${color.from}, ${color.to})`,
+            minWidth: value > 0 ? '28px' : '0',
+            boxShadow: `0 2px 8px ${color.from}55`,
+          }}
+        />
+      </div>
+
+      {/* Percent badge */}
+      <span
+        className="text-xs font-bold w-[36px] text-right shrink-0"
+        style={{ color: color.text }}
+      >
+        {value}%
+      </span>
     </div>
   );
 }
