@@ -589,6 +589,79 @@ export default function Dashboard() {
           {/* BOTTOM 3 */}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-10 items-stretch text-left">
+            <style>{`
+              .continue-playful-card {
+                background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+                border: 3px solid #86EFAC;
+                border-radius: 40px !important;
+                box-shadow: 0 12px 30px rgba(22, 163, 74, 0.06);
+                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                overflow: hidden;
+              }
+              .continue-playful-card:hover {
+                transform: translateY(-6px);
+                border-color: #4ADE80;
+                box-shadow: 0 20px 40px rgba(22, 163, 74, 0.14);
+              }
+
+              .activity-playful-card {
+                background: linear-gradient(135deg, #FFFDF5 0%, #FEF3C7 100%);
+                border: 3px solid #FDE047;
+                border-radius: 40px !important;
+                box-shadow: 0 12px 30px rgba(217, 119, 6, 0.06);
+                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                overflow: hidden;
+              }
+              .activity-playful-card:hover {
+                transform: translateY(-6px);
+                border-color: #FACC15;
+                box-shadow: 0 20px 40px rgba(217, 119, 6, 0.14);
+              }
+
+              .trophies-playful-card {
+                background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+                border: 3px solid #7DD3FC;
+                border-radius: 40px !important;
+                box-shadow: 0 12px 30px rgba(2, 132, 199, 0.06);
+                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                overflow: hidden;
+              }
+              .trophies-playful-card:hover {
+                transform: translateY(-6px);
+                border-color: #38BDF8;
+                box-shadow: 0 20px 40px rgba(2, 132, 199, 0.14);
+              }
+
+              .trophy-item-playful {
+                transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+              }
+              .trophy-item-playful:hover {
+                transform: scale(1.06) translateY(-3px);
+                box-shadow: 0 10px 25px rgba(2, 132, 199, 0.12);
+                border-color: #38BDF8 !important;
+              }
+
+              .btn-premium-continue {
+                background: linear-gradient(135deg, #4ADE80 0%, #16A34A 100%);
+                color: white !important;
+                font-weight: 800;
+                font-size: 20px;
+                padding: 12px 30px;
+                border-radius: 50px;
+                box-shadow: 0 8px 24px rgba(22, 163, 74, 0.2);
+                border: 3px solid #FFFFFF;
+                transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                display: inline-block;
+                text-decoration: none;
+              }
+              .btn-premium-continue:hover {
+                transform: translateY(-4px) scale(1.03);
+                box-shadow: 0 12px 30px rgba(22, 163, 74, 0.35);
+              }
+              .btn-premium-continue:active {
+                transform: scale(0.96);
+              }
+            `}</style>
             <ContinueLearning />
 
             <TodaysActivity
@@ -613,7 +686,7 @@ export default function Dashboard() {
             />
           </div>
         </main>
- </div> 
+      </div> 
 
       {/* Edit Popup */}
 
@@ -782,45 +855,39 @@ function EditProfilePopup({
 
 function ContinueLearning() {
   return (
-    <div className="rounded-[45px] p-5 shadow-md h-[320px] bg-[#F5F5F5] border border-gray-100 flex flex-col">
-
+    <div className="continue-playful-card p-5 h-[320px] flex flex-col relative group">
       {/* Title */}
-      <h3 className="text-[28px] font-semibold text-gray-800 text-center mb-6">
+      <h3 className="text-[26px] font-extrabold text-emerald-800 text-center mb-4 font-poppins flex items-center justify-center gap-2">
         Continue Learning
       </h3>
 
-      {/* Lesson Card */}
-      <div className="flex items-center gap-4 justify-center mb-6">
-
+      {/* Lesson Details Card */}
+      <div className="flex items-center gap-4 justify-center mb-4 bg-white/80 backdrop-blur-sm p-3.5 rounded-[24px] border border-emerald-100/50 shadow-inner group-hover:bg-white transition-all duration-300">
         <Image
           src="/SCreen/boy-girl.png"
-          width={140}
-          height={140}
+          width={110}
+          height={110}
           alt="lesson"
-          className="rounded-[24px] h-[120px] w-[140px] object-cover"
+          className="rounded-[18px] h-[90px] w-[110px] object-cover border border-emerald-100 shadow-sm"
         />
 
         <div className="flex flex-col text-left">
-
-          <span className="text-[22px] text-gray-600 leading-tight">
+          <span className="text-[18px] font-black text-emerald-700 leading-tight">
             Continue:
           </span>
 
-          <span className="text-[18px] text-gray-500 leading-tight">
+          <span className="text-[16px] font-bold text-gray-600 mt-1.5 leading-tight">
             Parts Of A Plant
           </span>
-
         </div>
-
       </div>
 
-      {/* Button */}
-      <Link href="/lessons" className="mt-auto">
-        <button className="w-full text-[#39E75F] text-[28px] font-medium hover:scale-105 transition">
+      {/* Action Button */}
+      <Link href="/lessons" className="mt-auto text-center w-full">
+        <button className="btn-premium-continue w-full cursor-pointer">
           Continue
         </button>
       </Link>
-
     </div>
   );
 }
@@ -834,98 +901,119 @@ function TodaysActivity({
   lessonCount = 0,
   gameAvg = 0,
 }: any) {
-  return (
-    <div className="rounded-[45px] p-5 shadow-md h-[320px] bg-[#F5F5F5] border border-gray-100 flex flex-col">
+  // Vivid, child-friendly color palettes
+  const customScanColors = ["#10B981", "#E5E7EB"];
+  const customTimeColors = ["#3B82F6", "#EC4899", "#E5E7EB"];
 
+  // Calculate detailed active times
+  const lessonMin = lessonCount * 10;
+  const gameMin = gameAvg > 0 ? Math.max(5, Math.round(gameAvg / 5)) : 0;
+  const totalMin = lessonMin + gameMin;
+  
+  // Calculate dynamic 3-part time data (Lesson, Game, and Leftover goal)
+  // Assumes a daily active goal of 60 minutes
+  const activeGoal = 60;
+  const timeLeft = Math.max(0, activeGoal - totalMin);
+
+  const customTimeData = [
+    { name: "Lessons", value: lessonMin },
+    { name: "Games", value: gameMin },
+    { name: "Leftover", value: timeLeft }
+  ];
+
+  const totalScans = scanData[0]?.value || 0;
+
+  return (
+    <div className="activity-playful-card p-5 h-[320px] flex flex-col">
       {/* Title */}
-      <h3 className="text-[28px] font-semibold text-gray-800 text-center mb-3">
+      <h3 className="text-[26px] font-extrabold text-amber-800 text-center mb-3 font-poppins flex items-center justify-center gap-2">
         Today’s Activity
       </h3>
 
-      {/* Charts */}
-      <div className="flex justify-center gap-4">
-
-        {/* Scan Chart */}
-        <div className="relative">
-
-          <PieChart width={140} height={140}>
+      {/* Charts Display */}
+      <div className="flex justify-center gap-6 items-center">
+        {/* Scan Chart Container */}
+        <div className="relative bg-white/80 backdrop-blur-sm p-1 rounded-[24px] border border-amber-100/50 shadow-sm w-[110px] h-[110px] flex items-center justify-center hover:scale-105 transition-all duration-300">
+          <PieChart width={100} height={100}>
             <Pie
               data={scanData}
-              innerRadius={40}
-              outerRadius={58}
+              innerRadius={30}
+              outerRadius={44}
               dataKey="value"
               startAngle={90}
               endAngle={-270}
-              cornerRadius={10}
+              stroke="none"
             >
               {scanData.map((_: any, i: number) => (
-                <Cell key={i} fill={scanColors[i]} />
+                <Cell key={i} fill={customScanColors[i]} />
               ))}
             </Pie>
           </PieChart>
 
-          <span className="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-1 text-[16px] font-medium text-gray-700">
-            {scanData[0]?.value || 0} {scanData[0]?.value === 1 ? "Time" : "Times"}
-          </span>
-
+          {/* Absolute Center Label */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <span className="text-[20px] font-black text-emerald-600 leading-none">
+              {totalScans}
+            </span>
+            <span className="text-[9px] font-black text-emerald-500 uppercase tracking-wider mt-0.5">
+              Scans
+            </span>
+          </div>
         </div>
 
-        {/* Time Chart */}
-        <div className="relative">
-
-          <PieChart width={140} height={140}>
+        {/* Time Chart Container */}
+        <div className="relative bg-white/80 backdrop-blur-sm p-1 rounded-[24px] border border-amber-100/50 shadow-sm w-[110px] h-[110px] flex items-center justify-center hover:scale-105 transition-all duration-300">
+          <PieChart width={100} height={100}>
             <Pie
-              data={timeData}
-              innerRadius={40}
-              outerRadius={58}
+              data={customTimeData}
+              innerRadius={30}
+              outerRadius={44}
               dataKey="value"
               startAngle={90}
               endAngle={-270}
-              cornerRadius={10}
+              stroke="none"
             >
-              {timeData.map((_: any, i: number) => (
-                <Cell key={i} fill={timeColors[i]} />
+              {customTimeData.map((_: any, i: number) => (
+                <Cell key={i} fill={customTimeColors[i]} />
               ))}
             </Pie>
           </PieChart>
 
-          {/* Labels */}
-          <div className="absolute top-[12px] right-[0px] bg-green-200 px-2 py-1 rounded-xl text-[13px] text-gray-700">
-            {Math.min(lessonCount * 10, 60)} Min
+          {/* Absolute Center Label */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <span className="text-[20px] font-black text-amber-700 leading-none">
+              {totalMin}
+            </span>
+            <span className="text-[9px] font-black text-amber-600 uppercase tracking-wider mt-0.5">
+              Mins
+            </span>
           </div>
-
-          <div className="absolute bottom-[20px] right-[0px] bg-pink-200 px-2 py-1 rounded-xl text-[13px] text-gray-700">
-            {gameAvg > 0 ? Math.max(5, Math.round(gameAvg / 5)) : 0} Min
-          </div>
-
         </div>
-
       </div>
 
-      {/* Legend */}
-      <div className="mt-auto flex flex-col items-start gap-2 text-[14px] text-gray-700 font-medium w-fit mx-auto">
-
-        <div className="flex items-center gap-3 w-full">
-          <span className="w-4 h-4 bg-green-500 rounded-sm shrink-0" />
-          <span>Scan 3 Plants</span>
+      {/* Gamified Legend Badges */}
+      <div className="mt-auto grid grid-cols-3 gap-2 w-full">
+        {/* Scans Badge */}
+        <div className="flex flex-col items-center bg-white/95 border border-emerald-200 rounded-[20px] py-1.5 px-1 text-center shadow-sm">
+          <span className="text-[9px] font-extrabold text-emerald-800 mt-0.5">Scans</span>
+          <span className="text-[11px] font-black text-emerald-500 mt-0.5">{totalScans}/10</span>
         </div>
 
-        <div className="flex items-center gap-3 w-full">
-          <span className="w-4 h-4 bg-pink-400 rounded-sm shrink-0" />
-          <span>Lesson</span>
+        {/* Lessons Badge */}
+        <div className="flex flex-col items-center bg-white/95 border border-blue-200 rounded-[20px] py-1.5 px-1 text-center shadow-sm">
+          <span className="text-[9px] font-extrabold text-blue-800 mt-0.5">Lessons</span>
+          <span className="text-[11px] font-black text-blue-500 mt-0.5">{lessonMin}m</span>
         </div>
 
-        <div className="flex items-center gap-3 w-full">
-          <span className="w-4 h-4 bg-green-700 rounded-sm shrink-0" />
-          <span>Games</span>
+        {/* Games Badge */}
+        <div className="flex flex-col items-center bg-white/95 border border-pink-200 rounded-[20px] py-1.5 px-1 text-center shadow-sm">
+          <span className="text-[9px] font-extrabold text-pink-800 mt-0.5">Games</span>
+          <span className="text-[11px] font-black text-pink-500 mt-0.5">{gameMin}m</span>
         </div>
-
       </div>
-
     </div>
   );
 }
-
 
 
 function TrophiesSection({ completedCount }: any) {
@@ -945,49 +1033,45 @@ function TrophiesSection({ completedCount }: any) {
   ];
 
   return (
-    <div className="bg-[#f5f5f5] rounded-[40px] p-5 shadow-md h-[320px] border border-gray-100 flex flex-col">
-      
+    <div className="trophies-playful-card p-5 h-[320px] flex flex-col">
       {/* Title */}
-      <div className="flex items-center justify-center gap-3 mb-4">
-        <h3 className="text-2xl font-bold text-gray-800">
-          Your Trophies
-        </h3>
-        <span className="text-3xl">🏆</span>
-      </div>
+      <h3 className="text-[26px] font-extrabold text-sky-800 text-center mb-3 font-poppins flex items-center justify-center gap-2">
+        Your Trophies
+      </h3>
 
-      {/* Cards */}
+      {/* Cards Grid */}
       <div className="grid grid-cols-2 gap-3 flex-1">
         {trophies.map((trophy, i) => (
           <div
             key={i}
-            className="relative bg-white rounded-[24px] shadow-md p-3 flex flex-col items-center justify-center border border-gray-100"
+            className="relative trophy-item-playful bg-white/80 backdrop-blur-sm rounded-[24px] p-3 flex flex-col items-center justify-center border border-sky-200/50 shadow-sm"
           >
-            {/* Check */}
-            <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-gradient-to-b from-yellow-300 to-yellow-500 flex items-center justify-center text-white font-bold text-xs">
+            {/* Checkmark Ribbon */}
+            <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 flex items-center justify-center text-white font-extrabold text-[10px] shadow-[0_2px_5px_rgba(245,158,11,0.3)] border border-white">
               ✓
             </div>
 
-            {/* Icon */}
+            {/* Graphic Icon */}
             <Image
               src={trophy.icon}
               alt={trophy.name}
-              width={55}
-              height={55}
-              className="object-contain mb-2"
+              width={50}
+              height={50}
+              className="object-contain mb-1.5 drop-shadow-md animate-pulse-slow"
             />
 
-            {/* Name */}
-            <h4 className="text-green-500 font-extrabold text-[11px] whitespace-nowrap">
+            {/* Trophy Name */}
+            <h4 className="text-sky-700 font-extrabold text-[11px] whitespace-nowrap tracking-tight">
               {trophy.name}
             </h4>
 
-            {/* Desc */}
-            <p className="text-green-500 text-[10px] whitespace-nowrap">
+            {/* Achievement Goal */}
+            <p className="text-gray-500 text-[10px] whitespace-nowrap mt-0.5 font-semibold">
               {trophy.desc}
             </p>
 
-            {/* XP */}
-            <div className="mt-2 px-3 py-1 rounded-full border-2 border-green-500 text-green-500 font-bold text-[10px] bg-gray-100">
+            {/* Award Points */}
+            <div className="mt-2.5 px-3 py-0.5 rounded-full border border-sky-200 text-sky-600 font-extrabold text-[10px] bg-sky-50/70 shadow-inner">
               {trophy.xp}
             </div>
           </div>
@@ -996,4 +1080,5 @@ function TrophiesSection({ completedCount }: any) {
     </div>
   );
 }
+
 
